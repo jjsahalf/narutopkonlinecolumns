@@ -40,7 +40,7 @@ public class GameOverPanel extends JPanel {
             List = new JLabel(new ImageIcon("ProjectResource\\Icon\\ListForGameOver.png"));
 
             WinDemo_1P.Create("ProjectResource\\AnimationEffects\\WinDemo\\1PWinDemo\\1PWinDemo%02d.png", 47, 3, 25);
-            WinDemo_2P.Create("ProjectResource\\AnimationEffects\\WinDemo\\2PWinDemo\\2PWinDemo%02d.png", 48, 2, 25);
+            WinDemo_2P.Create("ProjectResource\\AnimationEffects\\WinDemo\\2PWinDemo\\2PWinDemo%02d.png", 47, 2, 25);
             //  combo_thunder.setOpaque(false);
             //  combo_thunder.setBounds(530, 690, 300, 100);
             //  score_thunder.setOpaque(false);

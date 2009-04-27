@@ -7,19 +7,18 @@ import columns.Gui.UserListPad;
 import columns.pad.ColumnsPad;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
 import javax.swing.JButton;
-import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -28,9 +27,9 @@ import javax.swing.JTextField;
  *
  * @author SHY
  */
-public class ColumnsClient extends JFrame implements ActionListener, KeyListener{
+public class ColumnsClient extends JPanel implements ActionListener, KeyListener{
 
-    Socket clientSocket;
+    public Socket clientSocket;
     DataInputStream inputStream;
     DataOutputStream outputStream;
     String columnsClientName = null; //用户名
@@ -41,12 +40,14 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
     boolean isOnColumns = false;  //是否在游戏
     boolean isCreator = false;
     boolean isPaticipant = false;
+    public ColumnsClientThread columnsClientThread;
+
     UserListPad userListPad = new UserListPad();  //用户列表区
     UserChatPad userChatPad = new UserChatPad();  //用户聊天去
-    UserInputPad userInputPad = new UserInputPad();   //用户输入区
+    public UserInputPad userInputPad = new UserInputPad();   //用户输入区
     ColumnsPad columnsPad = new ColumnsPad(); //对战区域
     //面板区
-    JPanel southPanel = new JPanel();
+    public JPanel southPanel = new JPanel();
     JPanel centerPanel = new JPanel();
     JPanel westPanel = new JPanel();
 
@@ -60,9 +61,10 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
 
     public int movementNum = 0;
     public String shape = "";
+    public boolean canJoinGame = false;
 
     public ColumnsClient() throws IOException{
-        super("Java Columns客户端");
+//        this.setFocusable(true);
         setLayout(new BorderLayout());
         host=this.inputIP.getText();
 
@@ -100,34 +102,13 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
          southPanel.add(exitGameButton);
          southPanel.setBackground(Color.gray);
 
-       addWindowListener(new WindowAdapter(){
-           public void windowClosing(WindowEvent e){
-               if(isOnChat){
-                   try{
-                       clientSocket.close();
-                   }catch(Exception ed){
-                       ed.printStackTrace();
-                   }
-               }
-               if(isOnColumns || isGameConnected){
-                   try{
-//                       columnsPad.columnsSocket.close();
-                   }catch(Exception ee){
-                       ee.printStackTrace();
-                   }
-               }
-               System.exit(0);
-           }
-           public void windowActivated(WindowEvent ea){
-           }
-       });
-
        add(westPanel,BorderLayout.WEST);
        add(centerPanel,BorderLayout.CENTER);
        add(southPanel,BorderLayout.SOUTH);
 
 //       pack();
-       setSize(670,548);
+       Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(d.width, d.height);
        setVisible(true);
 //       setResizable(false);
 //       validate();
@@ -140,8 +121,8 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
             clientSocket = new Socket(serverIP, serverPort);
             inputStream = new DataInputStream(clientSocket.getInputStream());
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
-            ColumnsClientThread clientThread = new ColumnsClientThread(this); //创建客户端线程
-            clientThread.start();
+            columnsClientThread = new ColumnsClientThread(this); //创建客户端线程
+            columnsClientThread.start();
             isOnChat = true;
             return true;
         } catch (Exception e) {
@@ -161,6 +142,7 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
     public void actionPerformed(ActionEvent e) {
         if(e.getSource() == this.connectButton){ //连接到服务器按钮单击事件
             host = columnsPad.host = this.inputIP.getText(); //获得服务器地址
+            canJoinGame = false;
             try {
                 if(connectToServer(host, port)){  //成功连接服务器时，设置客户端相应的界面状态
                     userChatPad.chatTextArea.setText("");
@@ -181,20 +163,14 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                     ed.printStackTrace();
                 }
             }
-            if(isOnColumns || isGameConnected){  //若用户处于游戏状态
-                try {   //关闭游戏端口
-//                    columnsPad.columnsSocket.close();
-                } catch (Exception ee) {
-                    ee.printStackTrace();
-                }
-            }
-            System.exit(0);
+//            System.exit(0);
         }
         if(e.getSource() == this.joinGameButton){
             String selectedUser = (String)userListPad.userList.getSelectedValue(); //取得要加入的游戏
             //判断选中的用户是否已经在游戏或该用户为自己本身或者为空
             if(selectedUser == null || selectedUser.startsWith("[incolumns]") || selectedUser.equals(columnsClientName)){
                 columnsPad.statusText.setText("必须选择一个用户！");
+                canJoinGame = false;
             }else{   //执行加入游戏的操作
                 try {
                     if(!isGameConnected){  //若游戏套接口未连接
@@ -205,8 +181,6 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                             this.createGameButton.setEnabled(false);
                             this.joinGameButton.setEnabled(false);
                             this.cancelGameButton.setEnabled(true);
-//                            columnsPad.columnsThread.sendMessage("/joingame "
-//                                    + (String)userListPad.userList.getSelectedValue() + " " + columnsClientName);
                             sendMessage("/joingame "
                                     + (String)userListPad.userList.getSelectedValue() + " " + columnsClientName);
 //                        }
@@ -216,8 +190,6 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                         this.createGameButton.setEnabled(false);
                         this.joinGameButton.setEnabled(false);
                         this.cancelGameButton.setEnabled(true);
-//                        columnsPad.columnsThread.sendMessage("/joingame "
-//                                  + (String)userListPad.userList.getSelectedValue() + " " + columnsClientName);
                         sendMessage("/joingame "
                                   + (String)userListPad.userList.getSelectedValue() + " " + columnsClientName);
                     }
@@ -225,6 +197,7 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                     isGameConnected = false;
                     isOnColumns = false;
                     isPaticipant = false;
+                    canJoinGame = false;
                     this.createGameButton.setEnabled(false);
                     this.joinGameButton.setEnabled(true);
                     this.cancelGameButton.setEnabled(false);
@@ -242,7 +215,6 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                         this.createGameButton.setEnabled(false);
                         this.joinGameButton.setEnabled(false);
                         this.cancelGameButton.setEnabled(true);
-//                        columnsPad.columnsThread.sendMessage("/creategame " + "[incolumns]" + columnsClientName);
                         sendMessage("/creategame " + "[incolumns]" + columnsClientName);
                         columnsPad.statusText.setText("创建成功，等待玩家进入...");
 //                    }
@@ -252,7 +224,6 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                     this.createGameButton.setEnabled(false);
                     this.joinGameButton.setEnabled(false);
                     this.cancelGameButton.setEnabled(true);
-//                    columnsPad.columnsThread.sendMessage("/creategame " +"[incolumns]" + columnsClientName);
                     sendMessage("/creategame " +"[incolumns]" + columnsClientName);
                     columnsPad.statusText.setText("创建成功，等待玩家进入...");
                 }
@@ -269,6 +240,7 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
         }
         if(e.getSource() == this.cancelGameButton){
             if(isOnColumns){
+                canJoinGame = false;
                 sendMessage("/giveup " + columnsClientName);
                 columnsPad.setVicStatus(-1 * columnsPad.playerNum);
                 this.createGameButton.setEnabled(true);
@@ -277,6 +249,7 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
                 columnsPad.statusText.setText("请创建或加入游戏！");
             }
             if(!isOnColumns){
+                canJoinGame = false;
                 this.createGameButton.setEnabled(true);
                 this.joinGameButton.setEnabled(true);
                 this.cancelGameButton.setEnabled(false);
@@ -330,7 +303,6 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
 
     //从服务器获得另一个玩家的操作
     public int getControlMsg(){
-        System.out.println("getControlMsg " + movementNum);
         int temp = movementNum;
         movementNum = 0;
         return temp;
@@ -350,9 +322,16 @@ public class ColumnsClient extends JFrame implements ActionListener, KeyListener
 
     public void keyTyped(KeyEvent e) {}
     public void keyReleased(KeyEvent e) {}
-    public static void main(String[] args) throws IOException{
-        JFrame frame = new ColumnsClient();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setVisible(true);
-    }
+//    public static void main(String[] args){
+//        JFrame frame = new JFrame();
+//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+//        frame.setSize(d.width, d.height);
+//        try {
+//            frame.add(new ColumnsClient());
+//        } catch (IOException ex) {
+//            Logger.getLogger(ColumnsClient.class.getName()).log(Level.SEVERE, null, ex);
+//        }
+//        frame.setVisible(true);
+//    }
 }

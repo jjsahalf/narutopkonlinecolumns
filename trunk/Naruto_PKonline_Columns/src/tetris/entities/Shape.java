@@ -29,7 +29,7 @@ public class Shape {
 	public static final int RIGHT=2;
 	public static final int DOWN=3;
     public static final int DOWN_ONE_CELL=4;
-    
+
     public Thread thread;
     public ShapeDriver shapedriver;
 
@@ -75,30 +75,21 @@ public class Shape {
     }
 
 	public void moveLeft(){
-		//System.out.println("Shape's moveLeft");
 		left--;
 	}
 
 	public void moveRight(){
-		//System.out.println("Shape's moveRight");
 		left++;
 	}
 
 	public void moveDown(){
-		//System.out.println("Shape's moveDown");
-        pt=pt+5;
+        pt+=5;
         if(pt%Global.CELL_SIZE==0){
             top++;
-//            if(isSecondPlayer){
-//                top +=2;
-//            }
-//            else
-//                top ++;
         }
 	}
 
 	public void rotate(){
-		//System.out.println("Shape's rotate");
 		int temp;
 		temp=body[2][0];
 		body[2][0]=body[1][0];
@@ -107,7 +98,6 @@ public class Shape {
 	}
 
 	public void drawMe(Graphics g){
-		//System.out.println("Shape's drawMe");
 		for(int row=0;row<3 ;row++)
 		{
 			switch(body[row][0])
@@ -132,7 +122,6 @@ public class Shape {
                     g.drawImage(shape_earth, left * Global.CELL_SIZE, (row+top) * Global.CELL_SIZE + pt%50,
                             Global.CELL_SIZE, Global.CELL_SIZE, null);
                     break;
-//            case 6:g.setColor(Color.pink);break;
                 default:
                     g.setColor(Color.BLACK);
                     break;
@@ -167,10 +156,9 @@ public class Shape {
                 if (!isMoveDownDirectly) {
                     try {
                         if(isSecondPlayer){
-                            Thread.sleep(25);
+                            Thread.sleep(45);
                         }else
-                            Thread.sleep(40);
-//                        Thread.sleep(40);
+                            Thread.sleep(50);
                     } catch (InterruptedException e) {
                         // TODO Auto-generated catch block
                         e.printStackTrace();
@@ -178,7 +166,7 @@ public class Shape {
                 }
                 moveDown();
                 listener.shapeMoveDown(Shape.this);
-                
+
             }
 		}
 	}
@@ -207,8 +195,6 @@ public class Shape {
             System.out.println("start error");
             thread.start();
         }
-
-//		new Thread(new ShapeDriver()).start();
         init();
 	}
 	public void addListener(ShapeListener l){

@@ -5,6 +5,9 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.io.File;
 
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 
 public class SpriteAnimationStream {
@@ -53,6 +56,7 @@ public class SpriteAnimationStream {
     }
 
     public void One_Draw(Graphics g, int x, int y, int cx, int cy) {
+        
         if (this.IsDrawAgain) {
             g.drawImage(img, x, y, x + cx, y + cy, 0, 0, img.getWidth(null), img.getHeight(null), null);
         } else {
@@ -61,10 +65,15 @@ public class SpriteAnimationStream {
         if (currentFrame >= startNumber + frameNumber - 1) {
             this.IsDrawAgain = false;
         }
-        if (currentFrame == startNumber + frameNumber - 2) {
+        if (currentFrame >= startNumber + frameNumber - 2) {
             this.StopDraw = true;
+            currentFrame = startNumber + frameNumber - 2;
+            try {
+                img = ImageIO.read(new File(String.format(fileName, currentFrame)));
+            } catch (IOException ex) {
+                Logger.getLogger(SpriteAnimationStream.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
-
     }
 
     public void One_Draw_back(Graphics g, int x, int y, int cx, int cy) {
@@ -76,8 +85,14 @@ public class SpriteAnimationStream {
         if (currentFrame <= startNumber - frameNumber + 1) {
             this.IsDrawAgain = false;
         }
-        if (currentFrame == startNumber - frameNumber + 2) {
+        if (currentFrame <= startNumber - frameNumber + 2) {
             this.StopDraw = true;
+            currentFrame = startNumber - frameNumber + 2;
+            try {
+                img = ImageIO.read(new File(String.format(fileName, currentFrame)));
+            } catch (IOException ex) {
+                Logger.getLogger(SpriteAnimationStream.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
 

@@ -12,6 +12,9 @@ import java.util.StringTokenizer;
 public class ColumnsClientThread extends Thread{
     public ColumnsClient columnsClient;
     public FirstPlayer firstPlayer;
+
+    public boolean isGameOver = false;
+
     public ColumnsClientThread(ColumnsClient columnsClient){
         this.columnsClient = columnsClient;
     }
@@ -50,7 +53,7 @@ public class ColumnsClientThread extends Thread{
         }
         else if(msgReceived.startsWith("/yourname")){  //收到的信息为用户本名时
             columnsClient.columnsClientName = msgReceived.substring(10); //取得用户本名
-            columnsClient.setTitle("Columns 客户端 用户名：" + columnsClient.columnsClientName);  //设置程序Frame标题
+//            columnsClient.setTitle("Columns 客户端 用户名：" + columnsClient.columnsClientName);  //设置程序Frame标题
         }else if(msgReceived.equals("/reject")){
             try {
                 columnsClient.columnsPad.statusText.setText("不能加入游戏！");
@@ -63,16 +66,13 @@ public class ColumnsClientThread extends Thread{
             columnsClient.joinGameButton.setEnabled(true);
         }else if(msgReceived.startsWith("/peer")){  //收到的信息为游戏中的等待
             columnsClient.columnsPad.columnsPeerName = msgReceived.substring(6);
-            if(columnsClient.isCreator){
-                columnsClient.columnsPad.playerNum = 1;//设定玩家1先行      **************************************
-                columnsClient.columnsPad.isKeyEnabled = true;
-                columnsClient.columnsPad.statusText.setText("玩家1开始..."); // ***************************
-            }else if(columnsClient.isPaticipant){  //用户为游戏加入者
-                columnsClient.columnsPad.playerNum = -1;  //设定玩家2开始
-                columnsClient.columnsPad.statusText.setText("游戏加入，等待对手...");
-            }
             firstPlayer = new FirstPlayer(columnsClient);
             firstPlayer.setVisible(true);
+            if(columnsClient.isCreator){
+                columnsClient.canJoinGame = true;
+            }else if(columnsClient.isPaticipant){ 
+                columnsClient.canJoinGame = true;
+            }
         }else if(msgReceived.startsWith("/youwin")){   //收到的为胜利信息时
             columnsClient.isOnColumns = false;
             columnsClient.columnsPad.setVicStatus(columnsClient.columnsPad.playerNum);
@@ -122,10 +122,12 @@ public class ColumnsClientThread extends Thread{
     @Override
     public void run(){
         String message = "";
+        if(columnsClient.canJoinGame && firstPlayer.controller.isGameOver()){
+            isGameOver = firstPlayer.controller.isGameOver();
+        }
         try {
             while(true){  //等待聊天信息，进入等待状态
                 message = columnsClient.inputStream.readUTF();
-                System.out.println("client  "  + message);
                 dealWithMsg(message);
             }
         } catch (Exception es) {

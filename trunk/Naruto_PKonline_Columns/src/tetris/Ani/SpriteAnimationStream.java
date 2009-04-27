@@ -31,8 +31,6 @@ public class SpriteAnimationStream {
 
     public void Update(long timeElapse) {
         this.timeElapse += timeElapse;
- //       System.out.println("fps"+fps);
- //       System.out.println("frameNumber"+frameNumber);
         currentFrame = (int) ((this.timeElapse / (1000 / fps)) % frameNumber) + startNumber;
         try {
             img = ImageIO.read(new File(String.format(fileName, currentFrame)));
