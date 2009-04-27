@@ -37,7 +37,8 @@ public class VSModelPanel extends JPanel {
     FPSMonitor fpsMonitor = new FPSMonitor();
 
     public VSModelPanel() {
-        this.setFocusable(true);
+//        this.setFocusable(true);
+//        this.requestFocus();
         this.setOpaque(true);
         this.setLayout(null);
         this.setBackground(Color.BLACK);
@@ -117,7 +118,7 @@ public class VSModelPanel extends JPanel {
     public void paint(Graphics g) {
         super.paint(g);
         fpsMonitor.Update();
-//        g.drawString(String.format("%d", fpsMonitor.GetFPS()), 100, 100);
+        g.drawString(String.format("%d", fpsMonitor.GetFPS()), 100, 100);
 
          VSUnderDemo.Update(fpsMonitor.GetTimeElapse());
          VSUnderDemo.Draw(g, 0, 550,1280,300);

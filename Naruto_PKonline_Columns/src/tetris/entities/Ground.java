@@ -9,8 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.media.ControllerEvent;
 import javax.media.NoPlayerException;
 import tetris.util.Global;
@@ -50,9 +48,7 @@ public class Ground {
 
     String fileName;
     Thread thread;
-    int combo;
 
-    public boolean isSecondPlayer = false;
 
     private AudioClip sound_thunder;
     private AudioClip sound_wood;
@@ -64,17 +60,17 @@ public class Ground {
     private Player water_s_player;
     private Player wood_s_player;
 
+    public boolean isSecondPlayer = false;
 
     private class ThunderDListener implements ControllerListener{
 
         public void controllerUpdate(ControllerEvent e) {
             if (e instanceof EndOfMediaEvent) {
-                //System.out.println("play music");
                 thunder_d_player.setMediaTime(new Time(0));
             }
             return;
         }
-        
+
     }
     private class WaterSListener implements ControllerListener{
 
@@ -146,7 +142,11 @@ public class Ground {
         wood_s_player.addControllerListener(wood_s_listener);
     }
 
-    public Ground()  {
+
+    public Ground() {
+
+        Global.score = 0;
+        Global.score2P = 0;
         musicInit();
         fileName = "Profile\\BlockDemo3\\Earth\\Earth_H\\Earth_H%04d.png";
         try {
@@ -234,10 +234,11 @@ public class Ground {
             }
         }
 
+
     }
 
     public void accept(Shape shape) {
-        combo = 0;
+        Global.combo = 0;
         new_x = shape.getLeft();
         new_y = shape.getTop();
         for (int row = 0; row < 3; row++) {
@@ -245,12 +246,8 @@ public class Ground {
         }
 
         //check1
-
-
         remove2();
     }
-
-
 
     public boolean isFull() {
         boolean result = false;
@@ -298,7 +295,11 @@ public class Ground {
     }
 
     public boolean checkColumns() {
-        Global.COLUMNS_IS_CHANGE=false;
+        if (!isSecondPlayer) {
+            Global.COLUMNS_IS_CHANGE = false;
+        } else {
+            Global.COLUMNS_IS_CHANGENet = false;
+        }
         boolean isRemove = false;
         int first;
         int end;
@@ -315,27 +316,20 @@ public class Ground {
             for (int row = 0; row < Global.HEIGHT; row++) {
                 //   && !isFinish; row++) {
                 if (obstacles[row][columns] == 0) {
-                    //    System.out.println("为零:");
                     end++;
                     first = end;
-                    //       System.out.println(end + " " + first);
                     continue;
                 }
                 if (!isChecked && row + 1 < Global.HEIGHT && obstacles[row][columns] != obstacles[row + 1][columns]) {
-                    //       System.out.println("不等:");
                     end++;
                     first = end;
-                //        System.out.println(end + " " + first);
                 }
                 if (isChecked && row + 1 < Global.HEIGHT && obstacles[row][columns] != obstacles[row + 1][columns]) {
                     remove_end = end;
-                    //  isFinish = true;
                     break;
                 }
                 if (row + 1 < Global.HEIGHT && obstacles[row][columns] == obstacles[row + 1][columns]) {
-                    //        System.out.println("等:");
                     end++;
-                //        System.out.println(end);
                 }
                 if (end - first >= Global.MIN - 1) {
                     remove_first = first;
@@ -344,27 +338,44 @@ public class Ground {
                 if (isChecked && row + 1 == Global.HEIGHT) {
                     remove_end = end;
                     break;
-
-                //isFinish = true;
                 }
             }
             if (remove_end - remove_first >= Global.MIN - 1) {
                 isRemove = true;
-                Global.COLUMNS_IS_CHANGE=true;
-                Global.COLOR_COLUMNS=obstacles[remove_first][columns];
-                audioOfRemoveForColumns();
-                combo++;
-                Global.Y_COLUMNS = remove_first;
-                Global.X_COLUMNS = columns;
-                Global.HEIGHT_COLUMNS=remove_end-remove_first+1;
-
-                for (int i = remove_first; i <= remove_end; i++) {
-                    removeFlag[i][columns] = 1;
- //                   Global.COLOR_COLUMNS = obstacles[i][columns];
+                if (!isSecondPlayer) {
+                    Global.COLUMNS_IS_CHANGE = true;
+                    Global.COLOR_COLUMNS = obstacles[remove_first][columns];
+                    audioOfRemoveForColumns();
+                    Global.combo++;
+                    Global.Y_COLUMNS = remove_first;
+                    Global.X_COLUMNS = columns;
+                    Global.HEIGHT_COLUMNS = remove_end - remove_first + 1;
+                    if(!isSecondPlayer)
+                        Global.score = Global.score + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    else if(isSecondPlayer)
+                        Global.score2P = Global.score2P + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    for (int i = remove_first; i <= remove_end; i++) {
+                        removeFlag[i][columns] = 1;
+                    }
+                } else {
+                    Global.COLUMNS_IS_CHANGENet = true;
+                    Global.COLOR_COLUMNSNet = obstacles[remove_first][columns];
+                    audioOfRemoveForColumns();
+                    Global.combo++;
+                    Global.Y_COLUMNSNet = remove_first;
+                    Global.X_COLUMNSNet = columns;
+                    Global.HEIGHT_COLUMNSNet = remove_end - remove_first + 1;
+                    if(!isSecondPlayer)
+                        Global.score = Global.score + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    else if(isSecondPlayer)
+                        Global.score2P = Global.score2P + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    for (int i = remove_first; i <= remove_end; i++) {
+                        removeFlag[i][columns] = 1;
+//                        Global.COLOR_COLUMNSNet = obstacles[i][columns];
+                    }
                 }
             }
         }
-        //   System.out.println(isRemove);
         return isRemove;
     }
 
@@ -409,7 +420,11 @@ public class Ground {
     }
 
     public boolean checkBar() {
-        Global.BAR_IS_CHANGE=false;
+        if (!isSecondPlayer) {
+            Global.BAR_IS_CHANGE = false;
+        } else {
+            Global.BAR_IS_CHANGENet = false;
+        }
         boolean isRemove = false;
         int first;
         int end;
@@ -425,58 +440,64 @@ public class Ground {
             remove_first = 0;
             remove_end = 0;
             for (int columns = 0; columns < Global.WIDTH; columns++) {
-                
+
                 if (!isChecked && obstacles[row][columns] == 0) {
-                    //        System.out.println("为零:");
                     end++;
                     first = end;
-                    //        System.out.println(end + " " + first);
                     continue;
                 }
                 if (!isChecked && columns + 1 < Global.WIDTH && obstacles[row][columns] != obstacles[row][columns + 1]) {
-                    //     System.out.println("不等:");
                     end++;
                     first = end;
-                //     System.out.println(end + " " + first);
 
                 }
                 if (isChecked && columns + 1 < Global.WIDTH && obstacles[row][columns] != obstacles[row][columns + 1]) {
                     remove_end = end;
-                    //isFinish = true;
                     break;
                 }
                 if (columns + 1 < Global.WIDTH && obstacles[row][columns] == obstacles[row][columns + 1]) {
-                    //     System.out.println("等:");
                     end++;
-                //     System.out.println(end);
                 }
                 if (end - first >= Global.MIN - 1) {
-                    //  System.out.println("确定可疑消:");
                     remove_first = first;
                     isChecked = true;
                 }
                 if (isChecked && end + 1 == Global.WIDTH) {
-                    //    System.out.println("到头了:");
                     remove_end = end;
-                    //isFinish = true;
                     break;
                 }
             }
             if (remove_end - remove_first >= Global.MIN - 1) {
                 isRemove = true;
-                combo++;
-                Global.BAR_IS_CHANGE = true;
-                Global.COLOR_BAR = obstacles[row][remove_first];
-                audioOfRemoveForBar();
-                Global.X_BAR=remove_first;
-                Global.Y_BAR=row;
-                Global.WIDTH_BAR=remove_end-remove_first+1;
+                Global.combo++;
+                if (!isSecondPlayer) {
+                    Global.BAR_IS_CHANGE = true;
+                    Global.COLOR_BAR = obstacles[row][remove_first];
+                    if(!isSecondPlayer)
+                        Global.score = Global.score + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    else if(isSecondPlayer)
+                        Global.score2P = Global.score2P + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    audioOfRemoveForBar();
+                    Global.X_BAR = remove_first;
+                    Global.Y_BAR = row;
+                    Global.WIDTH_BAR = remove_end - remove_first + 1;
+                } else {
+                    Global.BAR_IS_CHANGENet = true;
+                    Global.COLOR_BARNet = obstacles[row][remove_first];
+                    if(!isSecondPlayer)
+                        Global.score = Global.score + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    else if(isSecondPlayer)
+                        Global.score2P = Global.score2P + (remove_end - remove_first + 1) * Global.BASE_SCORE;
+                    audioOfRemoveForBar();
+                    Global.X_BARNet = remove_first;
+                    Global.Y_BARNet = row;
+                    Global.WIDTH_BARNet = remove_end - remove_first + 1;
+                }
                 for (int i = remove_first; i <= remove_end; i++) {
                     removeFlag[row][i] = 1;
                 }
             }
         }
-        //  System.out.println(isRemove);
         return isRemove;
     }
 
@@ -504,8 +525,13 @@ public class Ground {
                 break;
         }
     }
+
     public boolean checkDiagonal_l2r() {
-        Global.L2R_IS_CHANGE=false;
+        if (!isSecondPlayer) {
+            Global.L2R_IS_CHANGE = false;
+        } else {
+            Global.L2R_IS_CHANGENet = false;
+        }
         boolean isRemove = false;
         for (int row = 0; row < Global.HEIGHT; row++) {
             for (int columns = 0; columns < Global.WIDTH; columns++) {
@@ -525,7 +551,12 @@ public class Ground {
                         if (k == Global.MIN) {
                             isRemove = true;
                             audioOfRemoveForDiagonal();
-                            combo++;
+                            Global.combo++;
+                            if(!isSecondPlayer)
+                                Global.score = Global.MIN*Global.BASE_SCORE + Global.score;
+                            else if(isSecondPlayer){
+                                Global.score2P = Global.MIN * Global.BASE_SCORE + Global.score2P;
+                            }
                             Global.L2R_IS_CHANGE=true;
                             Global.COLOR_L2R=obstacles[row][columns];
                             Global.X_L2R = columns * Global.CELL_SIZE;
@@ -542,7 +573,11 @@ public class Ground {
     }
 
     public boolean RemoveDiagonal_r2l() {
-        Global.R2L_IS_CHANGE=false;
+        if (!isSecondPlayer) {
+            Global.R2L_IS_CHANGE = false;
+        } else {
+            Global.R2L_IS_CHANGENet = false;
+        }
         boolean isRemove = false;
         for (int row = 0; row < Global.HEIGHT; row++) {
             for (int columns = 0; columns < Global.WIDTH; columns++) {
@@ -562,11 +597,23 @@ public class Ground {
                         if (k == Global.MIN) {
                             isRemove = true;
                             audioOfRemoveForDiagonal();
-                            combo++;
-                            Global.R2L_IS_CHANGE=true;
-                            Global.COLOR_R2L=obstacles[row][columns];
-                            Global.X_R2L=columns*Global.CELL_SIZE;
-                            Global.Y_R2L=row*Global.CELL_SIZE;
+                            Global.combo++;
+                            if(!isSecondPlayer)
+                                Global.score = Global.MIN*Global.BASE_SCORE + Global.score;
+                            else if(isSecondPlayer){
+                                Global.score2P = Global.MIN * Global.BASE_SCORE + Global.score2P;
+                            }
+                            if (!isSecondPlayer) {
+                                Global.R2L_IS_CHANGE = true;
+                                Global.COLOR_R2L = obstacles[row][columns];
+                                Global.X_R2L = columns * Global.CELL_SIZE;
+                                Global.Y_R2L = row * Global.CELL_SIZE;
+                            } else {
+                                Global.R2L_IS_CHANGENet = true;
+                                Global.COLOR_R2LNet = obstacles[row][columns];
+                                Global.X_R2LNet = columns * Global.CELL_SIZE;
+                                Global.Y_R2LNet = row * Global.CELL_SIZE;
+                            }
                             for (k = 0; k < Global.MIN; k++) {
                                 removeFlag[row + k][columns - k] = 1;
                             }
@@ -578,138 +625,6 @@ public class Ground {
         return isRemove;
     }
 
-    public boolean removeColumns() {
-        boolean columns_result;
-//        int color=obstacles[new_y][new_x];
-        int columns_first = new_y;
-        int columns_end = new_y;
-        for (int columns = new_y; columns <= Global.HEIGHT - 1; columns++) {
-//            if(first>new_y+2){
-//                break;
-//            }
-            if (columns_end - columns_first < 2) {
-                if (columns_end + 1 < Global.HEIGHT && columns_end + 1 <= 11 && obstacles[columns_end][new_x] == obstacles[columns_end + 1][new_x]) {
-                    columns_end++;
-                } else {
-                    if (columns_end + 1 <= 11) {
-                        columns_end++;
-                    }
-                    columns_first = columns_end;
-                }
-            } else {
-                if (columns_end + 1 < Global.HEIGHT && obstacles[columns_end][new_x] == obstacles[columns_end + 1][new_x]) {
-                    columns_end++;
-                } else {
-                    break;
-                }
-            }
-        }
-//        columns_first=first;
-        //       columns_end=end;
-
-        if (columns_end - columns_first >= 2) {
-            for (int i = columns_first; i <= columns_end; i++) {
-                obstacles[i][new_x] = 0;
-            }
-        }
-        if (columns_end - columns_first >= 2) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
-    public boolean removeBar() {
-        boolean bar_result = false;
-        for (int row = new_y; row <= new_y + 2; row++) {
-            int bar_first = new_x;
-            int bar_end = new_x;
-            /*            if(new_x+1<Global.WIDTH){
-            if(obstacles[row][new_x+1]==0){
-            break;
-            }
-            }
-            if(new_x-1>=0){
-            if(obstacles[row][new_x-1]==0){
-            break;
-            }
-            }*/
-            while (bar_first - 1 >= 0 && obstacles[row][bar_first - 1] == obstacles[row][bar_first]) {
-                bar_first--;
-            }
-            while (bar_end + 1 < Global.WIDTH && obstacles[row][bar_end + 1] == obstacles[row][bar_end]) {
-                bar_end++;
-            }
-
-            if (bar_end - bar_first >= 2) {
-                for (int i = bar_first; i <= bar_end; i++) {
-                    obstacles[row][i] = 0;
-                }
-                bar_result = true;
-            }
-        }
-        return bar_result;
-    }
-
-    public boolean removeDiagonalFromRight2Left() {
-        boolean r2l_result = false;
-        int r2l_first_x;
-        int r2l_first_y;
-        int r2l_end_x;
-        int r2l_end_y;
-        for (int row = new_y; row <= new_y + 2; row++) {
-            r2l_first_x = new_x;
-            r2l_first_y = row;
-            r2l_end_x = new_x;
-            r2l_end_y = row;
-            while (r2l_first_x - 1 >= 0 && r2l_first_y + 1 < Global.HEIGHT && obstacles[r2l_first_y][r2l_first_x] == obstacles[r2l_first_y + 1][r2l_first_x - 1]) {
-                r2l_first_x--;
-                r2l_first_y++;
-            }
-            while (r2l_end_x + 1 < Global.WIDTH && r2l_end_y - 1 >= 0 && obstacles[r2l_end_y][r2l_end_x] == obstacles[r2l_end_y - 1][r2l_end_x + 1]) {
-                r2l_end_x++;
-                r2l_end_y--;
-            }
-            if (r2l_end_x - r2l_first_x >= 2) {
-                int j = r2l_first_x;
-                for (int i = r2l_first_y; i >= r2l_end_y; i--, j++) {
-                    obstacles[i][j] = 0;
-                }
-                r2l_result = true;
-            }
-        }
-        return r2l_result;
-    }
-
-    public boolean removeDiagonalFromLeft2Right() {
-        boolean l2r_result = false;
-        int l2r_first_x;
-        int l2r_first_y;
-        int l2r_end_x;
-        int l2r_end_y;
-        for (int row = new_y; row <= new_y + 2; row++) {
-            l2r_first_x = new_x;
-            l2r_first_y = row;
-            l2r_end_x = new_x;
-            l2r_end_y = row;
-            while (l2r_first_x - 1 >= 0 && l2r_first_y - 1 >= 0 && obstacles[l2r_first_y][l2r_first_x] == obstacles[l2r_first_y - 1][l2r_first_x - 1]) {
-                l2r_first_x--;
-                l2r_first_y--;
-            }
-            while (l2r_end_x + 1 < Global.WIDTH && l2r_end_y + 1 < Global.HEIGHT && obstacles[l2r_end_y][l2r_end_x] == obstacles[l2r_end_y + 1][l2r_end_x + 1]) {
-                l2r_end_x++;
-                l2r_end_y++;
-            }
-            if (l2r_end_x - l2r_first_x >= 2) {
-                int j = l2r_first_x;
-                for (int i = l2r_first_y; i <= l2r_end_y; i++, j++) {
-                    obstacles[i][j] = 0;
-                }
-                l2r_result = true;
-            }
-        }
-        return l2r_result;
-    }
 
     public void dropDown() {
         int row, columns;
@@ -754,172 +669,7 @@ public class Ground {
         }
     }
 
-    public boolean removeAll() {
-
-        boolean result = false;
-
-//remove columns-------------------------------------------------------------------------------------------------
-        int columns_first = new_y;
-        int columns_end = new_y;
-        for (int columns = new_y; columns <= Global.HEIGHT - 1; columns++) {
-//            if(first>new_y+2){
-//                break;
-//            }
-            if (columns_end - columns_first < 2) {
-                if (columns_end + 1 < Global.HEIGHT && columns_end + 1 <= 11 && obstacles[columns_end][new_x] == obstacles[columns_end + 1][new_x]) {
-                    columns_end++;
-                } else {
-                    if (columns_end + 1 <= 11) {
-                        columns_end++;
-                    }
-                    columns_first = columns_end;
-                }
-            } else {
-                if (columns_end + 1 < Global.HEIGHT && obstacles[columns_end][new_x] == obstacles[columns_end + 1][new_x]) {
-                    columns_end++;
-                } else {
-                    break;
-                }
-            }
-        }
-//        columns_first=first;
-        //       columns_end=end;
-
-        /*        if(columns_end-columns_first>=2) {
-        result=true;
-        for(int i=columns_first;i<=columns_end;i++){
-        obstacles[i][new_x]=0;
-        }
-        }*/
-
-
-//remove bar ----------------------------------------------------------------------------------------------------
-        int bar_first = new_x;
-        int bar_end = new_x;
-        for (int row = new_y; row <= new_y + 2; row++) {
-
-            /*            if(new_x+1<Global.WIDTH){
-            if(obstacles[row][new_x+1]==0){
-            break;
-            }
-            }
-            if(new_x-1>=0){
-            if(obstacles[row][new_x-1]==0){
-            break;
-            }
-            }*/
-            while (bar_first - 1 >= 0 && obstacles[row][bar_first - 1] == obstacles[row][bar_first]) {
-                bar_first--;
-            }
-            while (bar_end + 1 < Global.WIDTH && obstacles[row][bar_end + 1] == obstacles[row][bar_end]) {
-                bar_end++;
-            }
-
-        /*            if(bar_end-bar_first>=2){
-        for(int i=bar_first;i<=bar_end;i++){
-        obstacles[row][i]=0;
-        }
-        result=true;
-        }*/
-        }
-
-        //remove diagonal r2l-----------------------------------------------------------------------------------------
-        int r2l_first_x = 0;
-        int r2l_first_y = 0;
-        int r2l_end_x = 0;
-        int r2l_end_y = 0;
-        for (int row = new_y; row <= new_y + 2; row++) {
-            r2l_first_x = new_x;
-            r2l_first_y = row;
-            r2l_end_x = new_x;
-            r2l_end_y = row;
-            while (r2l_first_x - 1 >= 0 && r2l_first_y + 1 < Global.HEIGHT && obstacles[r2l_first_y][r2l_first_x] == obstacles[r2l_first_y + 1][r2l_first_x - 1]) {
-                r2l_first_x--;
-                r2l_first_y++;
-            }
-            while (r2l_end_x + 1 < Global.WIDTH && r2l_end_y - 1 >= 0 && obstacles[r2l_end_y][r2l_end_x] == obstacles[r2l_end_y - 1][r2l_end_x + 1]) {
-                r2l_end_x++;
-                r2l_end_y--;
-            }
-        /*            if(r2l_end_x-r2l_first_x>=2){
-        int j=r2l_first_x;
-        for(int i=r2l_first_y;i>=r2l_end_y;i--,j++){
-        obstacles[i][j]=0;
-        }
-        result=true;
-        }*/
-        }
-
-
-//remove l2r---------------------------------------------------------------------------------------------------
-        int l2r_first_x = 0;
-        int l2r_first_y = 0;
-        int l2r_end_x = 0;
-        int l2r_end_y = 0;
-        for (int row = new_y; row <= new_y + 2; row++) {
-            l2r_first_x = new_x;
-            l2r_first_y = row;
-            l2r_end_x = new_x;
-            l2r_end_y = row;
-            while (l2r_first_x - 1 >= 0 && l2r_first_y - 1 >= 0 && obstacles[l2r_first_y][l2r_first_x] == obstacles[l2r_first_y - 1][l2r_first_x - 1]) {
-                l2r_first_x--;
-                l2r_first_y--;
-            }
-            while (l2r_end_x + 1 < Global.WIDTH && l2r_end_y + 1 < Global.HEIGHT && obstacles[l2r_end_y][l2r_end_x] == obstacles[l2r_end_y + 1][l2r_end_x + 1]) {
-                l2r_end_x++;
-                l2r_end_y++;
-            }
-        /*            if(l2r_end_x-l2r_first_x>=2){
-        int j=l2r_first_x;
-        for(int i=l2r_first_y;i<=l2r_end_y;i++,j++){
-        obstacles[i][j]=0;
-        }
-        result=true;
-        }*/
-        }
-
-//set zero------------------------------------------------------------------------------------------------
-
-        if (columns_end - columns_first >= 2) {
-            result = true;
-            for (int i = columns_first; i <= columns_end; i++) {
-                obstacles[i][new_x] = 0;
-            }
-        }
-        for (int row = new_y; row <= new_y + 2; row++) {
-            if (bar_end - bar_first >= 2) {
-                for (int i = bar_first; i <= bar_end; i++) {
-                    obstacles[row][i] = 0;
-                }
-                result = true;
-            }
-        }
-
-        if (r2l_end_x - r2l_first_x >= 2) {
-            int j = r2l_first_x;
-            for (int i = r2l_first_y; i >= r2l_end_y; i--, j++) {
-                obstacles[i][j] = 0;
-            }
-            result = true;
-        }
-
-        if (l2r_end_x - l2r_first_x >= 2) {
-            int j = l2r_first_x;
-            for (int i = l2r_first_y; i <= l2r_end_y; i++, j++) {
-                obstacles[i][j] = 0;
-            }
-            result = true;
-        }
-
-        return result;
-    }
-
-
-
-
-
     public void drawMe(Graphics g) {
-        //System.out.println("Ground's drawMe");
         for (int x = 0; x < Global.HEIGHT; x++) {
             for (int y = 0; y < Global.WIDTH; y++) {
                 if (obstacles[x][y] != 0) {
@@ -1014,14 +764,4 @@ public class Ground {
         }
         return true;
     }
-
-/*    public void controllerUpdate(ControllerEvent e) {
-         if (e instanceof EndOfMediaEvent) {
-            //System.out.println("play music");
-            thunder_d_player.setMediaTime(new Time(0));
-            water_s_player.setMediaTime(new Time(0));
-        }
-        return;
-    }*/
-
 }

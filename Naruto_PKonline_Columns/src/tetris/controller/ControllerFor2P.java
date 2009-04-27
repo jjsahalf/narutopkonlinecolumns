@@ -14,45 +14,22 @@ import tetris.entities.ShapeFactory;
 import tetris.listener.ShapeListener;
 import tetris.view.GamePanel;
 
-public class ControllerFor2P extends KeyAdapter implements ShapeListener{
+public class ControllerFor2P extends KeyAdapter implements ShapeListener {
 
-	Player player;
-	Component vc, cc;
-	boolean first = true, loop = false;
-	String currentDirectory;
+    Player player;
+    Component vc, cc;
+    boolean first = true, loop = false;
+    String currentDirectory;
+    private Shape shape;
+    private ShapeFactory shapeFactory;
+    private Ground ground;
+    private GamePanel gamePanel;
+    private boolean isGameOver = false;
 
-	private Shape shape;
-	private ShapeFactory shapeFactory;
-	private Ground ground;
-	private GamePanel gamePanel;
-
-
-	@Override
-
-	public void keyPressed(KeyEvent e) {
-		/*try
-		{
-			player = Manager.createPlayer (new MediaLocator (("file:e:/tomb2.mp3")));
-		}
-		catch (java.io.IOException e2)
-		{
-			System.out.println (e2);
-			return;
-		}
-		catch (NoPlayerException e2)
-		{
-			System.out.println ("�����ҵ�������.");
-			return;
-		}
-		if (player == null)
-		{
-			System.out.println ("�޷�����������.");
-			return;
-		}
-
-		player.start();*/
-		switch(e.getKeyCode())
-		{
+    @Override
+    public void keyPressed(KeyEvent e) {
+//        player.start();
+        switch (e.getKeyCode()) {
 
             case KeyEvent.VK_W:
                 shape.rotate();
@@ -80,59 +57,53 @@ public class ControllerFor2P extends KeyAdapter implements ShapeListener{
                 if (ground.IsMoveable(shape, Shape.DOWN)) {
                     shape.moveDownOneCell();
                 }
-               break;
-		}
-		gamePanel.display(shape,ground);
-	}
+                break;
+        }
+        gamePanel.display(shape, ground);
+    }
 
-	public void shapeMoveDown(Shape shape) {
-		gamePanel.display(shape, ground);
-	}
-
-
-	//���е�ͼ�α���ϰ������Ȼ������������ж��Լ��ܷ�����
-	public synchronized boolean isShapeMoveDownable(Shape shape) {
-        if(shape==null){
-            System.out.println("ever is NULL");
+    public void shapeMoveDown(Shape shape) {
+        gamePanel.display(shape, ground);
+    }
+    //���е�ͼ�α���ϰ������Ȼ������������ж��Լ��ܷ�����
+    public synchronized boolean isShapeMoveDownable(Shape shape) {
+        if (shape == null) {
+            System.out.println("shape is NULL");
             return true;
         }
-		// TODO Auto-generated method stub
-		if(ground.IsMoveable(shape, Shape.DOWN)){
-			return true;
-		}
-		else
-		{
-            System.out.println("enter the ELSE");
-			ground.accept(this.shape);
+        // TODO Auto-generated method stub
+        if (ground.IsMoveable(shape, Shape.DOWN)) {
+            return true;
+        } else {
+            ground.accept(this.shape);
             if (!ground.isFull()) {
                 try {
                     this.shape = shapeFactory.getShape(this);
-                    System.out.println("get the control of shape in controller");
                 } catch (Exception ex) {
                     System.out.println("notify error");
                 }
+            } else {
+                isGameOver = true;
+                shape.pause();
             }
-            else{
- /*               for(int row=0;row<Global.HEIGHT;row++){
-                    for(int columns=0;columns<Global.WIDTH;columns++){
-                        ground.obstacles[row][columns]=0;
-                    }
-                }
-                gamePanel.display(this.shape, ground);*/
-                System.exit(0);
-            }
-			return false;
-		}
-	}
-	public void newGame() throws IOException{
-		shape=shapeFactory.getShape(this);
-	}
+            return false;
+        }
+    }
 
-	public  ControllerFor2P(ShapeFactory shapeFactory,
-			Ground ground,GamePanel gamePanel){
+    public boolean isGameOver() {
+        return isGameOver;
+    }
+
+    public void newGame() throws IOException {
+        shape = shapeFactory.getShape(this);
+    }
+
+    public ControllerFor2P(ShapeFactory shapeFactory,
+            Ground ground, GamePanel gamePanel) {
         super();
-		this.shapeFactory=shapeFactory;
-		this.ground=ground;
-		this.gamePanel=gamePanel;
-	}
+        this.shapeFactory = shapeFactory;
+        this.ground = ground;
+        this.gamePanel = gamePanel;
+        ground.isSecondPlayer = true;//保证双人模式游戏中一个玩家的动画不会出现在另一个玩家的面板上
+    }
 }

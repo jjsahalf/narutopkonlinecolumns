@@ -15,7 +15,6 @@ public class UserListPad  extends JPanel{
     public JList userList = new JList();
     public DefaultListModel model = new DefaultListModel();
     public UserListPad(){
-        this.setFocusable(false);
         this.setLayout(new BorderLayout());
         userList.setModel(model);
 //        for(int i = 1; i <= 10; i ++){

@@ -4,234 +4,270 @@ package Naruto_PKonline_Columns.view;
 import Naruto_PKonline_Columns.GraphicsControl.FPSMonitor;
 import Naruto_PKonline_Columns.GraphicsControl.Global;
 import Naruto_PKonline_Columns.GraphicsControl.SpriteAnimationStream;
+import java.awt.Color;
 import java.awt.Graphics;
-import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import javax.imageio.ImageIO;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 public class StartPanel extends JPanel {
     //StartPanel里的属性
-
-    Image Background;
-    Image COLUMNS;
-    JLabel single_model = null;
-    JLabel vs_model = null;
-    JLabel onlinepk_model = null;
-    JLabel option = null;
-    JLabel exit = null;
-    JLabel TheIconforSingle = new JLabel();
-    JLabel TheIconforVS = new JLabel();
-    JLabel TheIconforOnlinePK = new JLabel();
-    JLabel TheIconforOption = new JLabel();
-    JLabel TheIconforExit = new JLabel();
     FPSMonitor fpsMonitor = new FPSMonitor();
+    private BufferedImage Background;
+    private BufferedImage Background_down1;
+    private BufferedImage Background_down2;
+    private BufferedImage Background_down3;
+    private BufferedImage Background_down4;
+    private BufferedImage Background_down5;
+    private BufferedImage Background_down6;
+    SpriteAnimationStream GlowSpereDemo = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelLight = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Single = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_VS = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Online = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Option = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Replay = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Exit = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Single_b = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_VS_b = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Online_b = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Option_b = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Replay_b = new SpriteAnimationStream();
+    SpriteAnimationStream MainPanelBCDemo_Exit_b = new SpriteAnimationStream();
     int count_for_demo = 0;
-    int count_for_demo2 = 0;//用来判断是不是从5到1的!
-    int x_for_demo = 600;
-    int y_for_demo = -50;//标题动画的路径
-    int J_Model = 0;
-//    SpriteAnimation LogoDemo = new SpriteAnimation();
-//    SpriteAnimation SingleModel_Demo = new SpriteAnimation();
-//    SpriteAnimation VS_Demo = new SpriteAnimation();
-//    SpriteAnimation OnlinePK_Demo = new SpriteAnimation();
-//    SpriteAnimation Option_Demo = new SpriteAnimation();
-//    SpriteAnimation Exit_Demo = new SpriteAnimation();
-//    SpriteAnimation Arrow = new SpriteAnimation();//箭头
-//    SpriteAnimationStream BackSquare = new SpriteAnimationStream();//箭头
-    SpriteAnimationStream LogoDemo = new SpriteAnimationStream();
-    SpriteAnimationStream SingleModel_Demo = new SpriteAnimationStream();
-    SpriteAnimationStream VS_Demo = new SpriteAnimationStream();
-    SpriteAnimationStream OnlinePK_Demo = new SpriteAnimationStream();
-    SpriteAnimationStream Option_Demo = new SpriteAnimationStream();
-    SpriteAnimationStream Exit_Demo = new SpriteAnimationStream();
-    SpriteAnimationStream Arrow = new SpriteAnimationStream();//箭头
-    SpriteAnimationStream BackSquare = new SpriteAnimationStream();//箭头
+    int count_for_demo2 = 1;
+    int J_Model = 1;
 
     StartPanel() {
-        this.setOpaque(false);
-
-        //加载资源
+//        this.setFocusable(true);
         try {
-            Background = ImageIO.read(new File("ProjectResource\\Background\\StartPanel.jpg"));
-            LogoDemo.Create("ProjectResource\\AnimationEffects\\LogoDemo\\COLUMNS%02d.png", 90, 1, 17);
-            SingleModel_Demo.Create("ProjectResource\\AnimationEffects\\TheSingleModelDemo\\TheSingleModel%02d.png", 45, 1, 25);
-            VS_Demo.Create("ProjectResource\\AnimationEffects\\TheVSModelDemo\\TheVSModel%02d.png", 45, 1, 25);
-            OnlinePK_Demo.Create("ProjectResource\\AnimationEffects\\TheOnlinePkModelDemo\\TheOnlinePKModel %02d.png", 45, 1, 25);
-            Option_Demo.Create("ProjectResource\\AnimationEffects\\OptionDemo\\Option%02d.png", 45, 1, 25);
-            Exit_Demo.Create("ProjectResource\\AnimationEffects\\ExitDemo\\EXIT %02d.png", 45, 1, 25);
-            Arrow.Create("ProjectResource\\AnimationEffects\\TheArrowDemo\\Arrow%04d.png", 60, 1, 25);
-            BackSquare.Create("ProjectResource\\AnimationEffects\\BackSquare2\\BackSquare%02d.png",50, 1, 25);
-            single_model = new JLabel(new ImageIcon("ProjectResource\\Background\\TheSingleModel.png"));
-            vs_model = new JLabel(new ImageIcon("ProjectResource\\Background\\TheVSModel.png"));
-            onlinepk_model = new JLabel(new ImageIcon("ProjectResource\\Background\\TheOnlinePKModel.png"));
-            option = new JLabel(new ImageIcon("ProjectResource\\Background\\Option.png"));
-            exit = new JLabel(new ImageIcon("ProjectResource\\Background\\EXIT.png"));
-            TheIconforSingle = new JLabel(new ImageIcon("ProjectResource\\Icon\\SingleModel.png"));
-            TheIconforVS = new JLabel(new ImageIcon("ProjectResource\\Icon\\VSModel.png"));
-            TheIconforOnlinePK = new JLabel(new ImageIcon("ProjectResource\\Icon\\OnlinePKModel.png"));
-            TheIconforOption = new JLabel(new ImageIcon("ProjectResource\\Icon\\OptionModel.png"));
-            TheIconforExit = new JLabel(new ImageIcon("ProjectResource\\Icon\\ExitModel.png"));
-        } catch (Exception ex) {
-            System.out.println("Error loading image");
+            this.setLayout(null);
+            this.setBackground(Color.BLACK);
+            Background = ImageIO.read(new File("ProjectResource\\Background\\MainBCBook.jpg"));
+            Background_down1 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo001.jpg"));
+            Background_down2 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo021.jpg"));
+            Background_down3 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo041.jpg"));
+            Background_down4 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo061.jpg"));
+            Background_down5 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo081.jpg"));
+            Background_down6 = ImageIO.read(new File("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo101.jpg"));
+            GlowSpereDemo.Create("ProjectResource\\AnimationEffects\\GlowSpereDemo\\GlowSphereDemo%03d.jpg", 250, 1, 25);
+            MainPanelBCDemo.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 125, 1, 25);
+            MainPanelLight.Create("ProjectResource\\AnimationEffects\\MainPanelLight\\MainPanelLight%02d.png", 50, 1, 25);
+
+            MainPanelBCDemo_Single.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 1, 25);
+            MainPanelBCDemo_VS.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 22, 25);
+            MainPanelBCDemo_Online.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 21, 41, 25);
+            MainPanelBCDemo_Option.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 61, 25);
+            MainPanelBCDemo_Replay.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 81, 25);
+            MainPanelBCDemo_Exit.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 101, 25);
+
+            MainPanelBCDemo_Single_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 21, 21, 25);
+            MainPanelBCDemo_VS_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 41, 25);
+            MainPanelBCDemo_Online_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 61, 25);
+            MainPanelBCDemo_Option_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 81, 25);
+            MainPanelBCDemo_Replay_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 101, 25);
+            MainPanelBCDemo_Exit_b.Create("ProjectResource\\AnimationEffects\\MainPanelBCDemo\\MainPanelBCDemo%03d.jpg", 22, 121, 25);
+
+            fpsMonitor.Reset();
+            new Thread(new PaintThread()).start();
+//            setFocusable(true);
+        } catch (IOException ex) {
+            System.out.print("Image not found");
         }
-
-        //选项标签
-        single_model.setOpaque(false);
-        single_model.setBounds(115, 150, 370, 75);
-        vs_model.setOpaque(false);
-        vs_model.setBounds(115, 240, 370, 75);
-        onlinepk_model.setOpaque(false);
-        onlinepk_model.setBounds(115, 330, 370, 75);
-        option.setOpaque(false);
-        option.setBounds(115, 420, 370, 75);
-        exit.setOpaque(false);
-        exit.setBounds(115, 510, 370, 75);
-        TheIconforSingle.setOpaque(false);
-        TheIconforSingle.setBounds(700, 450, 450, 450);
-        TheIconforSingle.setVisible(false);
-        TheIconforVS.setOpaque(false);
-        TheIconforVS.setBounds(700, 420, 450, 450);
-        TheIconforVS.setVisible(false);
-        TheIconforOnlinePK.setOpaque(false);
-        TheIconforOnlinePK.setBounds(700, 420, 450, 450);
-        TheIconforOnlinePK.setVisible(false);
-        TheIconforOption.setOpaque(false);
-        TheIconforOption.setBounds(700, 420, 450, 450);
-        TheIconforOption.setVisible(false);
-        TheIconforExit.setOpaque(false);
-        TheIconforExit.setBounds(700, 420, 450, 450);
-        TheIconforExit.setVisible(false);
-
-        this.setLayout(null);
-        this.add(single_model);
-        this.add(vs_model);
-        this.add(onlinepk_model);
-        this.add(option);
-        this.add(exit);
-        this.add(TheIconforSingle);
-        this.add(TheIconforVS);
-        this.add(TheIconforOnlinePK);
-        this.add(TheIconforOption);
-        this.add(TheIconforExit);
-        //开始线程
-        new Thread(new PaintThread()).start();
     }
 
     //响应MainGamePanel的键盘监听，实现对全局变量的改变，控制下一步应该显示的子面板
-    public void ControlStartPanel(int keyCode){
+    public void ControlStartPanel(int keyCode) {
         if (keyCode == 1) {
-                    if (J_Model < 6) {
-                        if (J_Model == 5) {
-                            count_for_demo2 = 1;
-                            J_Model = 1;
-                        } else {
-                            J_Model += 1;
-                        }
-                    }
-                    Global.SELECTED_FRAM = J_Model;
+            if (J_Model < 7) {
+                if (J_Model == 6) {
+                    count_for_demo = 1;
+                    count_for_demo2 = 1;
+                    J_Model = 1;
+                } else {
+                    J_Model += 1;
+                    count_for_demo2 = 1;
+                    count_for_demo = 1;
                 }
-                if (keyCode == 2) {
-                    if (J_Model != 0) {
-                        if (J_Model == 1) {
-                            count_for_demo2 = 2;
-                            J_Model = 5;
-                        } else {
-                            J_Model -= 1;
-                        }
-                    }
-                    Global.SELECTED_FRAM = J_Model;
+            }
+            Global.SELECTED_FRAM = J_Model;
+        }
+        if (keyCode == 2) {
+            if (J_Model != 0) {
+                if (J_Model == 1) {
+                    count_for_demo = 2;
+                    count_for_demo2 = 2;
+                    J_Model = 6;
+                } else {
+                    J_Model -= 1;
+                    count_for_demo2 = 2;
+                    count_for_demo = 2;
                 }
+            }
+            Global.SELECTED_FRAM = J_Model;
+        }
         fpsMonitor.Reset();
-          }
+    }
 
     @SuppressWarnings("empty-statement")
     public void paint(Graphics g) {
+        super.paint(g);
         fpsMonitor.Update();
-        g.drawImage(Background, 0, 0, this);//加载背景图片
-//        g.drawString(String.format("%d", fpsMonitor.GetFPS()), 100, 100);
-        //播放大标题动画
-        LogoDemo.Update(fpsMonitor.GetTimeElapse());
-        LogoDemo.Draw(g, x_for_demo, y_for_demo, 540, 380);
-        BackSquare.Update(fpsMonitor.GetTimeElapse());
-        BackSquare.Draw(g, 0, 0, 600, 800);
+        g.drawImage(Background, 0, 0, 1280, 300, this);//加载背景图片
+        g.drawString(String.format("%d", fpsMonitor.GetFPS()), 100, 100);
+        GlowSpereDemo.Update(fpsMonitor.GetTimeElapse());
+        GlowSpereDemo.Draw(g, 480, 20, 320, 240);
+        MainPanelLight.Update(fpsMonitor.GetTimeElapse());
+        MainPanelLight.Draw(g, 0, -50, 1280, 400);
+        //MainPanelBCDemo.Update(fpsMonitor.GetTimeElapse());
+        //MainPanelBCDemo.Draw(g, 0, 280, 1280, 500);
         switch (J_Model) {
             case 1:
-                 {
-                    TheIconforExit.setVisible(false);
-                    TheIconforSingle.setVisible(true);
-                    TheIconforVS.setVisible(false);
-                    exit.setVisible(true);
-                    single_model.setVisible(false);
-                    vs_model.setVisible(true);
-                    SingleModel_Demo.Update(fpsMonitor.GetTimeElapse());
-                    SingleModel_Demo.Draw(g, 149, 150);
-                    Arrow.Update(fpsMonitor.GetTimeElapse());
-                    Arrow.Draw(g, -12, 130);
+                MainPanelBCDemo_Exit_b.StopDraw = false;
+                MainPanelBCDemo_Exit_b.timeElapse = 0;
+                MainPanelBCDemo_Single.StopDraw = false;
+                MainPanelBCDemo_Single.timeElapse = 0;
+                MainPanelBCDemo_VS_b.StopDraw = false;
+                MainPanelBCDemo_VS_b.timeElapse = 0;
+                MainPanelBCDemo_Replay.StopDraw = false;
+                MainPanelBCDemo_Replay.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (count_for_demo == 1) {
+                        if (!MainPanelBCDemo_Exit.StopDraw) {
+                            MainPanelBCDemo_Exit.Update(fpsMonitor.GetTimeElapse());
+                        }
+                        MainPanelBCDemo_Exit.IsDrawAgain = true;
+                        MainPanelBCDemo_Exit.One_Draw(g, 0, 280, 1280, 500);
+                    } else {
+                        g.drawImage(Background_down1, 0, 280, 1280, 500, this);//加载背景图片
+                    }
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_Single_b.StopDraw) {
+                        MainPanelBCDemo_Single_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Single_b.IsDrawAgain = true;
+                    MainPanelBCDemo_Single_b.One_Draw_back(g, 0, 280, 1280, 500);
                 }
                 break;
             case 2:
-                 {
-                    TheIconforSingle.setVisible(false);
-                    TheIconforVS.setVisible(true);
-                    TheIconforOnlinePK.setVisible(false);
-                    single_model.setVisible(true);
-                    vs_model.setVisible(false);
-                    onlinepk_model.setVisible(true);
-                    VS_Demo.Update(fpsMonitor.GetTimeElapse());
-                    VS_Demo.Draw(g, 162, 240);
-                    Arrow.Update(fpsMonitor.GetTimeElapse());
-                    Arrow.Draw(g, 2, 220);
-
+                MainPanelBCDemo_Single_b.StopDraw = false;
+                MainPanelBCDemo_Single_b.timeElapse = 0;
+                MainPanelBCDemo_VS.StopDraw = false;
+                MainPanelBCDemo_VS.timeElapse = 0;
+                MainPanelBCDemo_Online_b.StopDraw = false;
+                MainPanelBCDemo_Online_b.timeElapse = 0;
+                MainPanelBCDemo_Exit.StopDraw = false;
+                MainPanelBCDemo_Exit.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (!MainPanelBCDemo_Single.StopDraw) {
+                        MainPanelBCDemo_Single.Update(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Single.IsDrawAgain = true;
+                    MainPanelBCDemo_Single.One_Draw(g, 0, 280, 1280, 500);
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_VS_b.StopDraw) {
+                        MainPanelBCDemo_VS_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_VS_b.IsDrawAgain = true;
+                    MainPanelBCDemo_VS_b.One_Draw_back(g, 0, 280, 1280, 500);
                 }
                 break;
             case 3:
-                 {
-                    TheIconforVS.setVisible(false);
-                    TheIconforOnlinePK.setVisible(true);
-                    TheIconforOption.setVisible(false);
-                    vs_model.setVisible(true);
-                    onlinepk_model.setVisible(false);
-                    option.setVisible(true);
-                    OnlinePK_Demo.Update(fpsMonitor.GetTimeElapse());
-                    OnlinePK_Demo.Draw(g, 99, 330);
-                    Arrow.Update(fpsMonitor.GetTimeElapse());
-                    Arrow.Draw(g, -22, 310);
+                MainPanelBCDemo_VS_b.StopDraw = false;
+                MainPanelBCDemo_VS_b.timeElapse = 0;
+                MainPanelBCDemo_Online.StopDraw = false;
+                MainPanelBCDemo_Online.timeElapse = 0;
+                MainPanelBCDemo_Option_b.StopDraw = false;
+                MainPanelBCDemo_Option_b.timeElapse = 0;
+                MainPanelBCDemo_Single.StopDraw = false;
+                MainPanelBCDemo_Single.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (!MainPanelBCDemo_VS.StopDraw) {
+                        MainPanelBCDemo_VS.Update(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_VS.IsDrawAgain = true;
+                    MainPanelBCDemo_VS.One_Draw(g, 0, 280, 1280, 500);
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_Online_b.StopDraw) {
+                        MainPanelBCDemo_Online_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Online_b.IsDrawAgain = true;
+                    MainPanelBCDemo_Online_b.One_Draw_back(g, 0, 280, 1280, 500);
                 }
                 break;
             case 4:
-                 {
-                    TheIconforOnlinePK.setVisible(false);
-                    TheIconforOption.setVisible(true);
-                    TheIconforExit.setVisible(false);
-                    onlinepk_model.setVisible(true);
-                    option.setVisible(false);
-                    exit.setVisible(true);
-                    Option_Demo.Update(fpsMonitor.GetTimeElapse());
-                    Option_Demo.Draw(g, 227, 420);
-                    Arrow.Update(fpsMonitor.GetTimeElapse());
-                    Arrow.Draw(g, 65, 400);
+                MainPanelBCDemo_Online_b.StopDraw = false;
+                MainPanelBCDemo_Online_b.timeElapse = 0;
+                MainPanelBCDemo_Option.StopDraw = false;
+                MainPanelBCDemo_Option.timeElapse = 0;
+                MainPanelBCDemo_Replay_b.StopDraw = false;
+                MainPanelBCDemo_Replay_b.timeElapse = 0;
+                MainPanelBCDemo_VS.StopDraw = false;
+                MainPanelBCDemo_VS.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (!MainPanelBCDemo_Online.StopDraw) {
+                        MainPanelBCDemo_Online.Update(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Online.IsDrawAgain = true;
+                    MainPanelBCDemo_Online.One_Draw(g, 0, 280, 1280, 500);
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_Option_b.StopDraw) {
+                        MainPanelBCDemo_Option_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Option_b.IsDrawAgain = true;
+                    MainPanelBCDemo_Option_b.One_Draw_back(g, 0, 280, 1280, 500);
                 }
                 break;
             case 5:
-                 {
-                    TheIconforOption.setVisible(false);
-                    TheIconforExit.setVisible(true);
-                    TheIconforSingle.setVisible(false);
-                    single_model.setVisible(true);
-                    option.setVisible(true);
-                    exit.setVisible(false);
-                    Exit_Demo.Update(fpsMonitor.GetTimeElapse());
-                    Exit_Demo.Draw(g, 248, 511);
-                    Arrow.Update(fpsMonitor.GetTimeElapse());
-                    Arrow.Draw(g, 90, 490);
+                MainPanelBCDemo_Option_b.StopDraw = false;
+                MainPanelBCDemo_Option_b.timeElapse = 0;
+                MainPanelBCDemo_Replay.StopDraw = false;
+                MainPanelBCDemo_Replay.timeElapse = 0;
+                MainPanelBCDemo_Exit_b.StopDraw = false;
+                MainPanelBCDemo_Exit_b.timeElapse = 0;
+                MainPanelBCDemo_Online.StopDraw = false;
+                MainPanelBCDemo_Online.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (!MainPanelBCDemo_Option.StopDraw) {
+                        MainPanelBCDemo_Option.Update(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Option.IsDrawAgain = true;
+                    MainPanelBCDemo_Option.One_Draw(g, 0, 280, 1280, 500);
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_Replay_b.StopDraw) {
+                        MainPanelBCDemo_Replay_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Replay_b.IsDrawAgain = true;
+                    MainPanelBCDemo_Replay_b.One_Draw_back(g, 0, 280, 1280, 500);
+                }
+                break;
+            case 6:
+                MainPanelBCDemo_Replay_b.StopDraw = false;
+                MainPanelBCDemo_Replay_b.timeElapse = 0;
+                MainPanelBCDemo_Single_b.StopDraw = false;
+                MainPanelBCDemo_Single_b.timeElapse = 0;
+                MainPanelBCDemo_Option.StopDraw = false;
+                MainPanelBCDemo_Option.timeElapse = 0;
+                MainPanelBCDemo_Exit.StopDraw = false;
+                MainPanelBCDemo_Exit.timeElapse = 0;
+                if (count_for_demo2 == 1) {
+                    if (!MainPanelBCDemo_Replay.StopDraw) {
+                        MainPanelBCDemo_Replay.Update(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Replay.IsDrawAgain = true;
+                    MainPanelBCDemo_Replay.One_Draw(g, 0, 280, 1280, 500);
+                } else if (count_for_demo2 == 2) {
+                    if (!MainPanelBCDemo_Exit_b.StopDraw) {
+                        MainPanelBCDemo_Exit_b.Update_back(fpsMonitor.GetTimeElapse());
+                    }
+                    MainPanelBCDemo_Exit_b.IsDrawAgain = true;
+                    MainPanelBCDemo_Exit_b.One_Draw_back(g, 0, 280, 1280, 500);
                 }
                 break;
         }
-
-        super.paint(g);
     }
 
     //执行动画的线程
@@ -241,7 +277,7 @@ public class StartPanel extends JPanel {
             while (true) {
                 repaint();
                 try {
-                    Thread.sleep(15);
+                    Thread.sleep(10);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

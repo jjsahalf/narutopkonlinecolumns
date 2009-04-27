@@ -30,7 +30,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
     private ColumnsClient columnsClient;
     public boolean isSecondPlayer = false;
     public boolean isNeedToSendMovement = false;
-    public boolean isGameOver = false;
+    private boolean isGameOver = false;
 
     public Controller(ShapeFactory shapeFactory,
             Ground ground, GamePanel gamePanel) {
@@ -49,6 +49,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
         this.ground = ground;
         this.gamePanel = gamePanel;
     }
+
 
     public void keyPressed(KeyEvent e) {
         if (!isSecondPlayer) {
@@ -88,12 +89,12 @@ public class Controller extends KeyAdapter implements ShapeListener {
                     }
                     break;
                 case KeyEvent.VK_SPACE:
-                    if (times % 2 == 1) {
-                        gamePanel.backplayer.stop();
-                        gamePanel.backplayer.deallocate();
-                    } else {
-                        gamePanel.backplayer.start();
-                    }
+//                    if (times % 2 == 1) {
+//                        gamePanel.backplayer.stop();
+//                        gamePanel.backplayer.deallocate();
+//                    } else {
+//                        gamePanel.backplayer.start();
+//                    }
                     shape.pause();
                     times++;
                     if (isNeedToSendMovement) {
@@ -171,23 +172,24 @@ public class Controller extends KeyAdapter implements ShapeListener {
                         boolean stop = false;
                         while (!stop) {
                             this.shape = getShape(columnsClient.getShape());
+                            Thread.sleep(1);
                             if (this.shape != null) {
                                 stop = true;
                             }
                         }
+                    } catch (InterruptedException ex) {
+                        Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (IOException ex) {
                         Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                } else if (ground.isFull()) {
-                    System.exit(0);
                 }
             } else if (!ground.isFull()) {
                 this.shape = shapeFactory.getShape(this);
             } else if (ground.isFull()) {  //游戏结束
-                isGameOver = true;
 //                gamePanel.backplayer.stop();
 //                gamePanel.backplayer.deallocate();
-                shape.pause();
+                isGameOver = true;
+                shape.pause(); 
             }
             return false;
         }
@@ -221,13 +223,6 @@ public class Controller extends KeyAdapter implements ShapeListener {
             }
             shape.setBody(shapes);
         } else {
-//            try {
-//                Thread.sleep(1);
-////                isShapeMoveDownable(getShape(columnsClient.getShape()));
-////                shape = null;
-//            } catch (InterruptedException ex) {
-//                Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
-//            }
             shape = null;
         }
         return shape;

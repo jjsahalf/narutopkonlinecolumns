@@ -2,10 +2,11 @@
 package columns.pad;
 
 import columns.client.ColumnsClient;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 import tetris.controller.Controller;
 import tetris.entities.Ground;
@@ -16,7 +17,11 @@ import tetris.view.GamePanel;
  *
  * @author SHY
  */
-public class FirstPlayer extends JFrame{
+public class FirstPlayer extends JPanel{
+
+    //游戏结束面板控件
+    FPSMonitor fpsMonitor = new FPSMonitor();
+    private BufferedImage Background;
 
     public ColumnsClient columnsClient;
 
@@ -24,7 +29,7 @@ public class FirstPlayer extends JFrame{
     ShapeFactory shapeFactory;
     Ground ground;
     GamePanel gamePanel;
-    Controller controller;
+    public Controller controller;
     private Thread thread;
 
     //网络对方游戏模块
@@ -34,6 +39,7 @@ public class FirstPlayer extends JFrame{
     Controller controllerNet;
 
     private int times = 1;
+    private boolean hasDisposed = false;
 
     public FirstPlayer(ColumnsClient columnsClient) throws IOException{
         this.columnsClient = columnsClient;
@@ -44,7 +50,8 @@ public class FirstPlayer extends JFrame{
         controller.isNeedToSendMovement = true;
         this.setFocusable(true);
         this.setLayout(null);
-        this.setSize(2*(gamePanel.getWidth()+10),gamePanel.getHeight()+35);
+        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setSize(d.width, d.height);
         gamePanel.setBounds(20, 20, gamePanel.getWidth()+10, gamePanel.getHeight()+35);
         this.add(gamePanel);
 	gamePanel.addKeyListener(controller);
@@ -82,20 +89,24 @@ public class FirstPlayer extends JFrame{
         public void run() {
             while (true) {
                 repaint();
-                //强制判断服务器是否返回给客户端对手的新动作
-                if(!(columnsClient.movementNum == 0)){
-                    controllerNet.setPeerPlayerMovement(columnsClient.getControlMsg());
-                }
-                //强制判断服务器是否返回给客户端对手的新方块
+            //强制判断服务器是否返回给客户端对手的新方块
                 if(!(columnsClient.shape.equals(""))){
                     if(times == 1){
                         try {
                         controllerNet.newGame();
-                        times ++;
+                        times = 2;
                     } catch (IOException ex) {
                         Logger.getLogger(FirstPlayer.class.getName()).log(Level.SEVERE, null, ex);
                     }
                     }
+                }
+                //强制判断服务器是否返回给客户端对手的新动作
+                if(!(columnsClient.movementNum == 0)){
+                    controllerNet.setPeerPlayerMovement(columnsClient.getControlMsg());
+                }
+                if(!hasDisposed && controller.isGameOver()){
+                    FirstPlayer.this.removeAll();
+                    clearGame();
                 }
                 try {
                     Thread.sleep(1);
@@ -105,5 +116,8 @@ public class FirstPlayer extends JFrame{
             }
         }
     }
+     private void clearGame(){
+
+     }
 
 }

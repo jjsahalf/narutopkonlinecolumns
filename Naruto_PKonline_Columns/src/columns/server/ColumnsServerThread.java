@@ -344,7 +344,6 @@ public class ColumnsServerThread extends Thread{
             sendInitMsg();
             while(true){
                 String message = inputData.readUTF();
-                System.out.println("server  " + message);
                 dealWithMsg(message);
             }
         } catch (Exception e) {
