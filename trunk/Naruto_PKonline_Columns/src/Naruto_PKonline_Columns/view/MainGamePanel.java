@@ -103,6 +103,8 @@ public class MainGamePanel extends JFrame {
                                         if (singleModelPanel.gamePanel != null) {
                                             try {
                                                 singleModelPanel.gamePanel.shape.pause();
+                                                tetris.util.Global.shapesPrint.close();
+                                                tetris.util.Global.actionPrint.close();
                                             } catch (Exception ex) {
                                                 Logger.getLogger(MainGamePanel.class.getName()).log(Level.SEVERE, null, ex);
                                             }
@@ -201,6 +203,8 @@ public class MainGamePanel extends JFrame {
                         case 3:
                             tetris.util.Global.score = 0;
                             tetris.util.Global.score2P = 0;
+                            tetris.util.Global.WIDTH = 7;
+                            tetris.util.Global.HEIGHT = 14;
                             MainGamePanel.this.remove(startPanel);
                             Global.ISPKONLINE = true;
                             vsModelPanel = new VSModelPanel();
@@ -235,6 +239,7 @@ public class MainGamePanel extends JFrame {
 
                                             @Override
                                             public void keyPressed(KeyEvent e) {
+                                                //只有游戏结束时才可以退出
                                                 if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                                                     MainGamePanel.this.remove(columnsClient);
                                                     MainGamePanel.this.add(vsModelPanel);
@@ -244,11 +249,11 @@ public class MainGamePanel extends JFrame {
                                             }
                                         });
 
-                                        columnsClient.connectButton.addMouseListener(new MouseAdapter() {
-
-                                            public void mousePressed(MouseEvent e) {
-                                            }
-                                        });
+//                                        columnsClient.connectButton.addMouseListener(new MouseAdapter() {
+//
+//                                            public void mousePressed(MouseEvent e) {
+//                                            }
+//                                        });
 
                                         columnsClient.exitGameButton.addMouseListener(new MouseAdapter() {
 
@@ -281,17 +286,19 @@ public class MainGamePanel extends JFrame {
                                                                 MainGamePanel.this.add(columnsClient.columnsClientThread.firstPlayer);
                                                                 MainGamePanel.this.setVisible(true);
                                                                 columnsClient.columnsClientThread.firstPlayer.addKeyListener(new KeyAdapter() {
-                                                                    public void keyPressed(KeyEvent e){
-                                                                        if(e.getKeyCode() == KeyEvent.VK_ESCAPE){
+
+                                                                    public void keyPressed(KeyEvent e) {
+                                                                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
                                                                             MainGamePanel.this.remove(columnsClient.columnsClientThread.firstPlayer);
+                                                                            MainGamePanel.this.repaint();
                                                                             MainGamePanel.this.add(columnsClient);
                                                                             MainGamePanel.this.setVisible(true);
+                                                                            columnsClient.setVisible(true);
                                                                             columnsClient.userInputPad.contentInputted.requestFocus();
                                                                         }
                                                                     }
                                                                 });
                                                                 timer.stop();
-//                                                                timer = null;
                                                             }
                                                         }
                                                     });
@@ -310,17 +317,24 @@ public class MainGamePanel extends JFrame {
                                                                 MainGamePanel.this.remove(columnsClient);
                                                                 MainGamePanel.this.add(columnsClient.columnsClientThread.firstPlayer);
                                                                 MainGamePanel.this.setVisible(true);
+                                                                columnsClient.columnsClientThread.firstPlayer.addKeyListener(new KeyAdapter() {
+
+                                                                    public void keyPressed(KeyEvent e) {
+                                                                        if (e.getKeyCode() == KeyEvent.VK_ESCAPE) {
+                                                                            MainGamePanel.this.remove(columnsClient.columnsClientThread.firstPlayer);
+                                                                            MainGamePanel.this.repaint();
+                                                                            MainGamePanel.this.add(columnsClient);
+                                                                            MainGamePanel.this.setVisible(true);
+                                                                            columnsClient.setVisible(true);
+                                                                            columnsClient.userInputPad.contentInputted.requestFocus();
+                                                                        }
+                                                                    }
+                                                                });
                                                                 timer.stop();
-//                                                                timer = null;
                                                             }
                                                         }
                                                     });
                                                     timer.start();
-
-//                                                    temp = false;
-//                                                    while(!temp){
-//                                                        temp = columnsClient.columnsClientThread.isGameOver;
-//                                                    }
                                                 }
                                             }
                                         });
@@ -331,6 +345,9 @@ public class MainGamePanel extends JFrame {
                                         MainGamePanel.this.remove(vsModelPanel);
                                         MainGamePanel.this.add(startPanel);
                                         vsModelPanel = null;
+                                        if(columnsClient != null){
+                                            columnsClient = null;
+                                        }
                                         System.gc();
                                     }
                                 }

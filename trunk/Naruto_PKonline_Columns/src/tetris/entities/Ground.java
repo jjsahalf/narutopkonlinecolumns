@@ -239,6 +239,7 @@ public class Ground {
 
     public void accept(Shape shape) {
         Global.combo = 0;
+        Global.combo2 = 0;
         new_x = shape.getLeft();
         new_y = shape.getTop();
         for (int row = 0; row < 3; row++) {
@@ -247,6 +248,7 @@ public class Ground {
 
         //check1
         remove2();
+        Global.actionPrint.println();
     }
 
     public boolean isFull() {
@@ -346,7 +348,10 @@ public class Ground {
                     Global.COLUMNS_IS_CHANGE = true;
                     Global.COLOR_COLUMNS = obstacles[remove_first][columns];
                     audioOfRemoveForColumns();
-                    Global.combo++;
+                    if(!isSecondPlayer)
+                        Global.combo++;
+                    else if(isSecondPlayer)
+                        Global.combo2 ++;
                     Global.Y_COLUMNS = remove_first;
                     Global.X_COLUMNS = columns;
                     Global.HEIGHT_COLUMNS = remove_end - remove_first + 1;
@@ -361,7 +366,10 @@ public class Ground {
                     Global.COLUMNS_IS_CHANGENet = true;
                     Global.COLOR_COLUMNSNet = obstacles[remove_first][columns];
                     audioOfRemoveForColumns();
-                    Global.combo++;
+                    if(!isSecondPlayer)
+                        Global.combo++;
+                    else if(isSecondPlayer)
+                        Global.combo2 ++;
                     Global.Y_COLUMNSNet = remove_first;
                     Global.X_COLUMNSNet = columns;
                     Global.HEIGHT_COLUMNSNet = remove_end - remove_first + 1;
@@ -469,7 +477,10 @@ public class Ground {
             }
             if (remove_end - remove_first >= Global.MIN - 1) {
                 isRemove = true;
-                Global.combo++;
+                if(!isSecondPlayer)
+                        Global.combo++;
+                    else if(isSecondPlayer)
+                        Global.combo2 ++;
                 if (!isSecondPlayer) {
                     Global.BAR_IS_CHANGE = true;
                     Global.COLOR_BAR = obstacles[row][remove_first];
@@ -551,16 +562,24 @@ public class Ground {
                         if (k == Global.MIN) {
                             isRemove = true;
                             audioOfRemoveForDiagonal();
-                            Global.combo++;
                             if(!isSecondPlayer)
+                        Global.combo++;
+                    else if(isSecondPlayer)
+                        Global.combo2 ++;
+                            if(!isSecondPlayer){
                                 Global.score = Global.MIN*Global.BASE_SCORE + Global.score;
-                            else if(isSecondPlayer){
-                                Global.score2P = Global.MIN * Global.BASE_SCORE + Global.score2P;
-                            }
-                            Global.L2R_IS_CHANGE=true;
+                                Global.L2R_IS_CHANGE=true;
                             Global.COLOR_L2R=obstacles[row][columns];
                             Global.X_L2R = columns * Global.CELL_SIZE;
                             Global.Y_L2R = row * Global.CELL_SIZE;
+                            }else if(isSecondPlayer){
+                                Global.score2P = Global.MIN * Global.BASE_SCORE + Global.score2P;
+                                Global.L2R_IS_CHANGENet=true;
+                            Global.COLOR_L2RNet=obstacles[row][columns];
+                            Global.X_L2RNet = columns * Global.CELL_SIZE;
+                            Global.Y_L2RNet = row * Global.CELL_SIZE;
+                            }
+                            
                             for (k = 0; k < Global.MIN; k++) {
                                 removeFlag[row + k][columns + k] = 1;
                             }
@@ -597,7 +616,10 @@ public class Ground {
                         if (k == Global.MIN) {
                             isRemove = true;
                             audioOfRemoveForDiagonal();
-                            Global.combo++;
+                            if(!isSecondPlayer)
+                        Global.combo++;
+                    else if(isSecondPlayer)
+                        Global.combo2 ++;
                             if(!isSecondPlayer)
                                 Global.score = Global.MIN*Global.BASE_SCORE + Global.score;
                             else if(isSecondPlayer){

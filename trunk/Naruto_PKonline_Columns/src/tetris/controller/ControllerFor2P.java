@@ -11,6 +11,7 @@ import javax.media.Player;
 import tetris.entities.Ground;
 import tetris.entities.Shape;
 import tetris.entities.ShapeFactory;
+import tetris.entities.ShapeForReplay;
 import tetris.listener.ShapeListener;
 import tetris.view.GamePanel;
 
@@ -105,5 +106,13 @@ public class ControllerFor2P extends KeyAdapter implements ShapeListener {
         this.ground = ground;
         this.gamePanel = gamePanel;
         ground.isSecondPlayer = true;//保证双人模式游戏中一个玩家的动画不会出现在另一个玩家的面板上
+    }
+
+    public boolean isShapeMoveDownable(ShapeForReplay shapeForReplay) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void shapeMoveDown(ShapeForReplay shapeForReplay) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

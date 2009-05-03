@@ -165,6 +165,7 @@ public class Shape {
                     }
                 }
                 moveDown();
+                Global.actionPrint.print('!');
                 listener.shapeMoveDown(Shape.this);
 
             }

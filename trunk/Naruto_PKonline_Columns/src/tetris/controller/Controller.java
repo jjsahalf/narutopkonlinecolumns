@@ -5,6 +5,7 @@ import java.awt.Component;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -13,7 +14,9 @@ import javax.media.Player;
 import tetris.entities.Ground;
 import tetris.entities.Shape;
 import tetris.entities.ShapeFactory;
+import tetris.entities.ShapeForReplay;
 import tetris.listener.ShapeListener;
+import tetris.util.Global;
 import tetris.view.GamePanel;
 
 public class Controller extends KeyAdapter implements ShapeListener {
@@ -38,6 +41,16 @@ public class Controller extends KeyAdapter implements ShapeListener {
         this.shapeFactory = shapeFactory;
         this.ground = ground;
         this.gamePanel = gamePanel;
+        try {
+            Global.shapesPrint = new java.io.PrintWriter(Global.shapesFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        try {
+            Global.actionPrint = new java.io.PrintWriter(Global.actionFile);
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     //联网对战时的构造函数;
@@ -50,7 +63,6 @@ public class Controller extends KeyAdapter implements ShapeListener {
         this.gamePanel = gamePanel;
     }
 
-
     public void keyPressed(KeyEvent e) {
         if (!isSecondPlayer) {
             switch (e.getKeyCode()) {
@@ -59,6 +71,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
                     if (times % 2 == 1) {
                         shape.rotate();
                     }
+                    Global.actionPrint.print(1);
                     if (isNeedToSendMovement) {
                         columnsClient.sendControlMsg(1);
                     }
@@ -68,6 +81,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
                     if ((times % 2 == 1) && ground.IsMoveable(shape, Shape.LEFT)) {
                         shape.moveLeft();
                     }
+                    Global.actionPrint.print(2);
                     if (isNeedToSendMovement) {
                         columnsClient.sendControlMsg(2);
                     }
@@ -76,6 +90,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
                     if ((times % 2 == 1) && ground.IsMoveable(shape, Shape.RIGHT)) {
                         shape.moveRight();
                     }
+                    Global.actionPrint.print(3);
                     if (isNeedToSendMovement) {
                         columnsClient.sendControlMsg(3);
                     }
@@ -84,6 +99,7 @@ public class Controller extends KeyAdapter implements ShapeListener {
                     if ((times % 2 == 1) && ground.IsMoveable(shape, Shape.DOWN)) {
                         shape.moveDownDirectly();
                     }
+                    Global.actionPrint.print(4);
                     if (isNeedToSendMovement) {
                         columnsClient.sendControlMsg(4);
                     }
@@ -185,11 +201,15 @@ public class Controller extends KeyAdapter implements ShapeListener {
                 }
             } else if (!ground.isFull()) {
                 this.shape = shapeFactory.getShape(this);
+                Global.shapesPrint.print(shapeFactory.getShapeElements());
+                Global.shapesPrint.println();
             } else if (ground.isFull()) {  //游戏结束
 //                gamePanel.backplayer.stop();
 //                gamePanel.backplayer.deallocate();
+                Global.shapesPrint.close();
+                Global.actionPrint.close();
                 isGameOver = true;
-                shape.pause(); 
+                shape.pause();
             }
             return false;
         }
@@ -203,6 +223,8 @@ public class Controller extends KeyAdapter implements ShapeListener {
     public void newGame() throws IOException {
         if (Naruto_PKonline_Columns.GraphicsControl.Global.ISPKONLINE == false) {
             shape = shapeFactory.getShape(this);
+            Global.shapesPrint.print(shapeFactory.getShapeElements());
+            Global.shapesPrint.println();
         } else if (Naruto_PKonline_Columns.GraphicsControl.Global.ISPKONLINE == true && !isSecondPlayer) {
             shape = shapeFactory.getShape(this);
             columnsClient.sendShape(shapeFactory.getShapeElements());
@@ -226,5 +248,13 @@ public class Controller extends KeyAdapter implements ShapeListener {
             shape = null;
         }
         return shape;
+    }
+
+    public boolean isShapeMoveDownable(ShapeForReplay shapeForReplay) {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    public void shapeMoveDown(ShapeForReplay shapeForReplay) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

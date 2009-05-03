@@ -14,6 +14,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -22,12 +24,13 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.plaf.basic.BasicButtonUI;
 
 /**
  *
  * @author SHY
  */
-public class ColumnsClient extends JPanel implements ActionListener, KeyListener{
+public class ColumnsClient extends JPanel implements MouseListener,ActionListener, KeyListener{
 
     public Socket clientSocket;
     DataInputStream inputStream;
@@ -57,11 +60,12 @@ public class ColumnsClient extends JPanel implements ActionListener, KeyListener
     public JButton createGameButton=new JButton("建立游戏");
     public JButton joinGameButton=new JButton("加入游戏");
     public JButton cancelGameButton=new JButton("放弃游戏");
-    public JButton exitGameButton=new JButton("关闭程序");
+    public JButton exitGameButton=new JButton("退出游戏大厅");
 
     public int movementNum = 0;
     public String shape = "";
     public boolean canJoinGame = false;
+    public boolean isGameOver = false;
 
     public ColumnsClient() throws IOException{
 //        this.setFocusable(true);
@@ -87,6 +91,18 @@ public class ColumnsClient extends JPanel implements ActionListener, KeyListener
         this.joinGameButton.addActionListener(this);
         this.cancelGameButton.addActionListener(this);
         this.exitGameButton.addActionListener(this);
+//        this.connectButton.addMouseListener((MouseListener) this);
+//        this.createGameButton.addMouseListener((MouseListener) this);
+//        this.joinGameButton.addMouseListener((MouseListener) this);
+//        this.cancelGameButton.addMouseListener((MouseListener) this);
+//        this.exitGameButton.addMouseListener((MouseListener) this);
+
+//        this.connectButton.setBorderPainted(false);
+//        this.createGameButton.setBorderPainted(false);
+//        this.joinGameButton.setBorderPainted(false);
+//        this.cancelGameButton.setBorderPainted(false);
+//        this.exitGameButton.setBorderPainted(false);
+        this.connectButton.setUI(new BasicButtonUI());
 
         this.createGameButton.setEnabled(false);
         this.joinGameButton.setEnabled(false);
@@ -117,7 +133,7 @@ public class ColumnsClient extends JPanel implements ActionListener, KeyListener
     //按指定的IP地址和端口连接到服务器
     public boolean connectToServer(String serverIP, int serverPort) throws Exception{
         try {
-            columnsPad.columnsSocket = clientSocket;
+//            columnsPad.columnsSocket = clientSocket;
             clientSocket = new Socket(serverIP, serverPort);
             inputStream = new DataInputStream(clientSocket.getInputStream());
             outputStream = new DataOutputStream(clientSocket.getOutputStream());
@@ -242,7 +258,7 @@ public class ColumnsClient extends JPanel implements ActionListener, KeyListener
             if(isOnColumns){
                 canJoinGame = false;
                 sendMessage("/giveup " + columnsClientName);
-                columnsPad.setVicStatus(-1 * columnsPad.playerNum);
+//                columnsPad.setVicStatus(-1 * columnsPad.playerNum);
                 this.createGameButton.setEnabled(true);
                 this.joinGameButton.setEnabled(true);
                 this.cancelGameButton.setEnabled(false);
@@ -320,18 +336,18 @@ public class ColumnsClient extends JPanel implements ActionListener, KeyListener
         return temp;
     }
 
+    //发送游戏结束信息
+    public void sendGameOver(){
+        sendMessage("/gameOver" + columnsClientName);
+    }
+
     public void keyTyped(KeyEvent e) {}
     public void keyReleased(KeyEvent e) {}
-//    public static void main(String[] args){
-//        JFrame frame = new JFrame();
-//        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//        Dimension d = Toolkit.getDefaultToolkit().getScreenSize();
-//        frame.setSize(d.width, d.height);
-//        try {
-//            frame.add(new ColumnsClient());
-//        } catch (IOException ex) {
-//            Logger.getLogger(ColumnsClient.class.getName()).log(Level.SEVERE, null, ex);
-//        }
-//        frame.setVisible(true);
-//    }
+
+    public void mouseClicked(MouseEvent e) {}
+    public void mouseReleased(MouseEvent e) {}
+    public void mouseEntered(MouseEvent e) {}
+    public void mouseExited(MouseEvent e) { }
+
+    public void mousePressed(MouseEvent e) {}
 }
