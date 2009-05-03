@@ -72,7 +72,7 @@ public class SingleModelPanel extends JPanel {
     public Image combo3 = null;
     public Image combo4 = null;
 
-    public Font font = new Font("微软雅黑",Font.BOLD,70);
+    public Font font = new Font("微软雅黑",Font.BOLD,50);
 
 
     public SingleModelPanel() throws IOException {

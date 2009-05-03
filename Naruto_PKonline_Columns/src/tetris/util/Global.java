@@ -53,7 +53,19 @@ public class Global {
     public static final int FREQUENCY = 50;
     public static final int BASE_SCORE = 30;
     public static int forecast[][] = new int[3][1];
+    public static int forecast2[][] = new int[3][1];
     public static int combo = 0;
+    public static int combo2 = 0;
     public static int score = 0;
     public static int score2P = 0;
+
+    public static java.io.File shapesFile = new java.io.File("replay\\shapes.txt");
+    public static java.io.File actionFile = new java.io.File("replay\\action.txt");
+    public static java.io.PrintWriter shapesPrint = null;
+    public static java.io.PrintWriter actionPrint = null;
+    public static java.io.FileReader shapesFileReader = null;
+    public static java.io.FileReader actionFileReader = null;
+    public static java.io.BufferedReader shapesReader = null;
+    public static java.io.BufferedReader actionReader = null;
+
 }

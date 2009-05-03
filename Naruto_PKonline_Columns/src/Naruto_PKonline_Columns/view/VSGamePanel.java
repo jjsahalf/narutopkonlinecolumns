@@ -4,8 +4,10 @@ package Naruto_PKonline_Columns.view;
 import Naruto_PKonline_Columns.GraphicsControl.FPSMonitor;
 import Naruto_PKonline_Columns.GraphicsControl.Global;
 import Naruto_PKonline_Columns.GraphicsControl.SpriteAnimationStream;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -38,6 +40,16 @@ public class VSGamePanel extends JPanel {
     JLabel Score_2P = null;
     JLabel Combo_1P = null;
     JLabel Combo_2P = null;
+    private Image combo1 = null;
+    private Image combo2 = null;
+    private Image combo3 = null;
+    private Image combo4 = null;
+    //下一个方块
+    public Image ground_water = null;
+    public Image ground_wood = null;
+    public Image ground_thunder = null;
+    public Image ground_fire = null;
+    public Image ground_earth = null;
     JLabel Next_1P = null;
     JLabel Next_2P = null;
     SpriteAnimationStream Fire_1P = new SpriteAnimationStream();
@@ -55,7 +67,7 @@ public class VSGamePanel extends JPanel {
     private BufferedImage Background1;
     SpriteAnimationStream WinDemo_1P = new SpriteAnimationStream();
     SpriteAnimationStream WinDemo_2P = new SpriteAnimationStream();
-    private Font font = new Font("微软雅黑", Font.BOLD, 70);
+    private Font font = new Font("微软雅黑", Font.BOLD, 50);
     private int temp1PScore = 0;
     private int temp2PScore = 0;
 
@@ -65,6 +77,38 @@ public class VSGamePanel extends JPanel {
             try {
                 this.setOpaque(false);
                 this.setLayout(null);
+                //读取下一个方块
+                try {
+                    ground_water = ImageIO.read(new File("ProjectResource//water//groundwater0000.png"));
+                } catch (IOException ex) {
+                    System.out.println("ground's IOimage error");
+                }
+                try {
+                    ground_wood = ImageIO.read(new File("ProjectResource//wood//groundwood0000.png"));
+                } catch (IOException ex) {
+                    System.out.println("ground's IOimage error");
+                }
+                try {
+                    ground_thunder = ImageIO.read(new File("ProjectResource//thunder//groundthunder0000.png"));
+                } catch (IOException ex) {
+                    System.out.println("ground's IOimage error");
+                }
+                try {
+                    ground_fire = ImageIO.read(new File("ProjectResource//fire//groundfire0000.png"));
+                } catch (IOException ex) {
+                    System.out.println("ground's IOimage error");
+                }
+                try {
+                    ground_earth = ImageIO.read(new File("ProjectResource//earth//groundearth0000.png"));
+                } catch (IOException ex) {
+                    System.out.println("ground's IOimage error");
+                }
+                //读取combo
+                combo1 = ImageIO.read(new File("ProjectResource//ComboDemo//1Combo//110.png"));
+                combo2 = ImageIO.read(new File("ProjectResource//ComboDemo//2Combo//210.png"));
+                combo3 = ImageIO.read(new File("ProjectResource//ComboDemo//3Combo//310.png"));
+                combo4 = ImageIO.read(new File("ProjectResource//ComboDemo//4Combo//410.png"));
+
                 Background = ImageIO.read(new File("ProjectResource\\Background\\VSGamePanelBC.jpg"));
 
                 Icon1 = new JLabel(new ImageIcon("ProjectResource\\Icon\\Naruto.png"));
@@ -85,17 +129,17 @@ public class VSGamePanel extends JPanel {
                 Fire_1P.Create("ProjectResource\\AnimationEffects\\1pFire\\1pFire%04d.png", 30, 30, 25);
 
                 Score_1P.setOpaque(false);
-                Score_1P.setBounds(715, 650, 370, 75);
+                Score_1P.setBounds(350, 230, 370, 75);
                 Score_2P.setOpaque(false);
-                Score_2P.setBounds(715, 650, 370, 75);
+                Score_2P.setBounds(550, 230, 370, 75);
                 Combo_1P.setOpaque(false);
-                Combo_1P.setBounds(715, 650, 370, 75);
+                Combo_1P.setBounds(350, 450, 370, 75);
                 Combo_2P.setOpaque(false);
-                Combo_2P.setBounds(715, 650, 370, 75);
+                Combo_2P.setBounds(550, 450, 370, 75);
                 Next_1P.setOpaque(false);
-                Next_1P.setBounds(715, 650, 370, 75);
+                Next_1P.setBounds(350, 10, 370, 75);
                 Next_2P.setOpaque(false);
-                Next_2P.setBounds(715, 650, 370, 75);
+                Next_2P.setBounds(550, 10, 370, 75);
 
                 SixStar1.setOpaque(false);
                 SixStar1.setBounds(100, 550, 300, 300);
@@ -104,12 +148,12 @@ public class VSGamePanel extends JPanel {
 
                 this.add(SixStar1);
                 this.add(SixStar2);
-                // this.add(Score_1P);
-                // this.add(Score_2P);
-                // this.add(Combo_1P);
-                //  this.add(Combo_2P);
-                //  this.add(Next_1P);
-                //  this.add(Next_2P);
+                this.add(Score_1P);
+                this.add(Score_2P);
+                this.add(Combo_1P);
+                this.add(Combo_2P);
+                this.add(Next_1P);
+                this.add(Next_2P);
                 //第一位玩家的角色
                 switch (Global.FIRSTPLAYERROLE) {
                     case 1:
@@ -176,13 +220,14 @@ public class VSGamePanel extends JPanel {
             groundFirst = new Ground();
             gamePanelFirst = new GamePanel();
             controllerFirst = new Controller(shapeFactoryFirst, groundFirst, gamePanelFirst);
-            gamePanelFirst.setBounds(700, -100, gamePanelFirst.getWidth() + 10, gamePanelFirst.getHeight() + 35);
+            gamePanelFirst.setBounds(900, -100, gamePanelFirst.getWidth() + 10, gamePanelFirst.getHeight() + 35);
             gamePanelFirst.addKeyListener(controllerFirst);
             this.addKeyListener(controllerFirst);
             this.add(gamePanelFirst);
 
             //第一个玩家
             shapeFactorySecond = new ShapeFactory();
+            shapeFactorySecond.isSecondPlayer = true;
             groundSecond = new Ground();
             groundSecond.isSecondPlayer = true;
             gamePanelSecond = new GamePanel(true);
@@ -217,70 +262,162 @@ public class VSGamePanel extends JPanel {
         if (!hasDisposed) {
             g.drawImage(Background, 0, 0, 1280, 800, this);//加载背景图片
             super.paint(g);
+            g.setFont(font);
+            g.setColor(Color.red);
             Fire_1P.Update(fpsMonitor.GetTimeElapse());
             Fire_2P.Update(fpsMonitor.GetTimeElapse());
-            //第二个玩家的蓄力图标
-            int temp = tetris.util.Global.score - temp1PScore;
-                if(temp >= 90 && temp < 180){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                }else if(temp >= 180 && temp < 270){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                    Fire_2P.Draw(g, 975, 620, 50, 50);
-                }else if(temp >= 270 && temp < 360){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                    Fire_2P.Draw(g, 975, 620, 50, 50);
-                    Fire_2P.Draw(g, 1030, 620, 50, 50);
-                }else if(temp >= 360 && temp < 450){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                    Fire_2P.Draw(g, 975, 620, 50, 50);
-                    Fire_2P.Draw(g, 1030, 620, 50, 50);
-                    Fire_2P.Draw(g, 1050, 660, 50, 50);
-                }else if(temp >= 450 && temp < 540){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                    Fire_2P.Draw(g, 975, 620, 50, 50);
-                    Fire_2P.Draw(g, 1030, 620, 50, 50);
-                    Fire_2P.Draw(g, 1050, 660, 50, 50);
-                    Fire_2P.Draw(g, 1030, 705, 50, 50);
-                }else if(temp >= 540){
-                    Fire_2P.Draw(g, 955, 660, 50, 50);
-                    Fire_2P.Draw(g, 975, 620, 50, 50);
-                    Fire_2P.Draw(g, 1030, 620, 50, 50);
-                    Fire_2P.Draw(g, 1050, 660, 50, 50);
-                    Fire_2P.Draw(g, 1030, 705, 50, 50);
-                    Fire_2P.Draw(g, 975, 705, 50, 50);
-                    temp1PScore = tetris.util.Global.score;
+            //显示玩家一下一个方块
+            for (int i = 0; i < 3; i++) {
+                switch (tetris.util.Global.forecast[i][0]) {
+                    case 1:
+                        g.drawImage(ground_thunder, 720, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+
+                    case 2:
+                        g.drawImage(ground_wood, 720, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 3:
+                        g.drawImage(ground_water, 720, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 4:
+                        g.drawImage(ground_fire, 720, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 5:
+                        g.drawImage(ground_earth, 720, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    //			case 6:g.setColor(Color.pink);break;
+                    default:
+                        g.setColor(Color.BLACK);
+                        break;
                 }
-            //第二个玩家的蓄力图标
-            int temp2 = tetris.util.Global.score2P - temp2PScore;
-            if(temp2 >= 90 && temp2 < 180){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-            }else if(temp2 >= 180 && temp2 < 270){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-                    Fire_1P.Draw(g, 230, 615, 50, 50);
-            }else if(temp2 >= 270 && temp2 < 360){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-                    Fire_1P.Draw(g, 230, 615, 50, 50);
-                    Fire_1P.Draw(g, 270, 640, 50, 50);
-            }else if(temp2 >= 360 && temp2 < 450){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-                    Fire_1P.Draw(g, 230, 615, 50, 50);
-                    Fire_1P.Draw(g, 270, 640, 50, 50);
-                    Fire_1P.Draw(g, 270, 685, 50, 50);
-            }else if(temp2 >= 450 && temp2 < 540){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-                    Fire_1P.Draw(g, 230, 615, 50, 50);
-                    Fire_1P.Draw(g, 270, 640, 50, 50);
-                    Fire_1P.Draw(g, 270, 685, 50, 50);
-                    Fire_1P.Draw(g, 230, 705, 50, 50);
-            }else if(temp2 >= 540){
-                Fire_1P.Draw(g, 190, 640, 50, 50);
-                    Fire_1P.Draw(g, 230, 615, 50, 50);
-                    Fire_1P.Draw(g, 270, 640, 50, 50);
-                    Fire_1P.Draw(g, 270, 685, 50, 50);
-                    Fire_1P.Draw(g, 230, 705, 50, 50);
-                    Fire_1P.Draw(g, 190, 685, 50, 50);
-                    temp2PScore = tetris.util.Global.score2P;
             }
+            for (int i = 0; i < 3; i++) {
+                switch (tetris.util.Global.forecast2[i][0]) {
+                    case 1:
+                        g.drawImage(ground_thunder, 500, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+
+                    case 2:
+                        g.drawImage(ground_wood, 500, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 3:
+                        g.drawImage(ground_water, 500, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 4:
+                        g.drawImage(ground_fire, 500, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    case 5:
+                        g.drawImage(ground_earth, 500, 90 + i * tetris.util.Global.CELL_SIZE,
+                                tetris.util.Global.CELL_SIZE, tetris.util.Global.CELL_SIZE, null);
+                        break;
+                    //			case 6:g.setColor(Color.pink);break;
+                    default:
+                        g.setColor(Color.BLACK);
+                        break;
+                }
+            }
+            //右边玩家的蓄力图标
+            int temp = tetris.util.Global.score - temp1PScore;
+            if (temp >= 90 && temp < 180) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+            } else if (temp >= 180 && temp < 270) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+                Fire_2P.Draw(g, 975, 620, 50, 50);
+            } else if (temp >= 270 && temp < 360) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+                Fire_2P.Draw(g, 975, 620, 50, 50);
+                Fire_2P.Draw(g, 1030, 620, 50, 50);
+            } else if (temp >= 360 && temp < 450) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+                Fire_2P.Draw(g, 975, 620, 50, 50);
+                Fire_2P.Draw(g, 1030, 620, 50, 50);
+                Fire_2P.Draw(g, 1050, 660, 50, 50);
+            } else if (temp >= 450 && temp < 540) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+                Fire_2P.Draw(g, 975, 620, 50, 50);
+                Fire_2P.Draw(g, 1030, 620, 50, 50);
+                Fire_2P.Draw(g, 1050, 660, 50, 50);
+                Fire_2P.Draw(g, 1030, 705, 50, 50);
+            } else if (temp >= 540) {
+                Fire_2P.Draw(g, 955, 660, 50, 50);
+                Fire_2P.Draw(g, 975, 620, 50, 50);
+                Fire_2P.Draw(g, 1030, 620, 50, 50);
+                Fire_2P.Draw(g, 1050, 660, 50, 50);
+                Fire_2P.Draw(g, 1030, 705, 50, 50);
+                Fire_2P.Draw(g, 975, 705, 50, 50);
+                temp1PScore = tetris.util.Global.score;
+            }
+            //左边玩家的蓄力图标
+            int temp2 = tetris.util.Global.score2P - temp2PScore;
+            if (temp2 >= 90 && temp2 < 180) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+            } else if (temp2 >= 180 && temp2 < 270) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+                Fire_1P.Draw(g, 230, 615, 50, 50);
+            } else if (temp2 >= 270 && temp2 < 360) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+                Fire_1P.Draw(g, 230, 615, 50, 50);
+                Fire_1P.Draw(g, 270, 640, 50, 50);
+            } else if (temp2 >= 360 && temp2 < 450) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+                Fire_1P.Draw(g, 230, 615, 50, 50);
+                Fire_1P.Draw(g, 270, 640, 50, 50);
+                Fire_1P.Draw(g, 270, 685, 50, 50);
+            } else if (temp2 >= 450 && temp2 < 540) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+                Fire_1P.Draw(g, 230, 615, 50, 50);
+                Fire_1P.Draw(g, 270, 640, 50, 50);
+                Fire_1P.Draw(g, 270, 685, 50, 50);
+                Fire_1P.Draw(g, 230, 705, 50, 50);
+            } else if (temp2 >= 540) {
+                Fire_1P.Draw(g, 190, 640, 50, 50);
+                Fire_1P.Draw(g, 230, 615, 50, 50);
+                Fire_1P.Draw(g, 270, 640, 50, 50);
+                Fire_1P.Draw(g, 270, 685, 50, 50);
+                Fire_1P.Draw(g, 230, 705, 50, 50);
+                Fire_1P.Draw(g, 190, 685, 50, 50);
+                temp2PScore = tetris.util.Global.score2P;
+            }
+            //玩家连续消去个数
+            switch (tetris.util.Global.combo) {
+                case 1:
+                    g.drawImage(combo1, 700, 550, 100, 100, null);
+                    break;
+                case 2:
+                    g.drawImage(combo2, 700, 550, 100, 100, null);
+                    break;
+                case 3:
+                    g.drawImage(combo3, 700, 550, 100, 100, null);
+                    break;
+                case 4:
+                    g.drawImage(combo4, 700, 550, 100, 100, null);
+                    break;
+            }
+            g.drawString(tetris.util.Global.score + "", 740, 350);
+            switch (tetris.util.Global.combo2) {
+                case 1:
+                    g.drawImage(combo1, 430, 550, 100, 100, null);
+                    break;
+                case 2:
+                    g.drawImage(combo2, 430, 550, 100, 100, null);
+                    break;
+                case 3:
+                    g.drawImage(combo3, 430, 550, 100, 100, null);
+                    break;
+                case 4:
+                    g.drawImage(combo4, 430, 550, 100, 100, null);
+                    break;
+            }
+            g.drawString(tetris.util.Global.score2P + "", 500, 350);
         } else {
 //            g.setFont(font);
             g.drawImage(Background1, 0, 0, 1280, 800, this);//加载背景图片
@@ -310,23 +447,29 @@ public class VSGamePanel extends JPanel {
             while (true) {
                 repaint();
                 //将!hasDisposed放在前面可以保证在clearGame()函数执行之后不会再发生判断controllerFirst时为空的异常
-                if (!hasDisposed && (controllerFirst.isGameOver() || controllerSecond.isGameOver()) ) {
+                if (!hasDisposed && (controllerFirst.isGameOver() || controllerSecond.isGameOver())) {
                     if (tetris.util.Global.score > tetris.util.Global.score2P) {
                         winPlayer = 1;
-                        gamePanelFirst.shape.pause();
-                        gamePanelSecond.shape.pause();
+                        if(controllerFirst.isGameOver())
+                            gamePanelSecond.shape.pause();
+                        else if(controllerSecond.isGameOver())
+                            gamePanelFirst.shape.pause();
                         clearGame();
                     } //玩家2胜利
                     else if (tetris.util.Global.score < tetris.util.Global.score2P) {
                         winPlayer = 2;
-                        gamePanelFirst.shape.pause();
-                        gamePanelSecond.shape.pause();
+                        if(controllerFirst.isGameOver())
+                            gamePanelSecond.shape.pause();
+                        else if(controllerSecond.isGameOver())
+                            gamePanelFirst.shape.pause();
                         clearGame();
                     } //玩家1胜利
                     else if (tetris.util.Global.score == tetris.util.Global.score2P) {
                         winPlayer = 3;
-                        gamePanelFirst.shape.pause();
-                        gamePanelSecond.shape.pause();
+                        if(controllerFirst.isGameOver())
+                            gamePanelSecond.shape.pause();
+                        else if(controllerSecond.isGameOver())
+                            gamePanelFirst.shape.pause();
                         clearGame();
                     }         //平局
                     VSGamePanel.this.removeAll();

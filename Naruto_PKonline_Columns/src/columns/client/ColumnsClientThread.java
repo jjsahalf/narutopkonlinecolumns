@@ -41,7 +41,6 @@ public class ColumnsClientThread extends Thread{
             StringTokenizer userToken = new StringTokenizer(msgReceived, " ");
             int waitNumber = 0;
             columnsClient.userListPad.model.removeAllElements();   //清空客户端用户列表
-//            columnsClient.userInputPad.userChoice.removeAll(); //清空客户端用户下拉表
             while(userToken.hasMoreTokens()){ //收到的用户信息列表中存在数据时
                 String user = (String)userToken.nextToken(" ");
                 if(waitNumber>0){  //用户信息有效时
@@ -53,7 +52,6 @@ public class ColumnsClientThread extends Thread{
         }
         else if(msgReceived.startsWith("/yourname")){  //收到的信息为用户本名时
             columnsClient.columnsClientName = msgReceived.substring(10); //取得用户本名
-//            columnsClient.setTitle("Columns 客户端 用户名：" + columnsClient.columnsClientName);  //设置程序Frame标题
         }else if(msgReceived.equals("/reject")){
             try {
                 columnsClient.columnsPad.statusText.setText("不能加入游戏！");
@@ -75,7 +73,7 @@ public class ColumnsClientThread extends Thread{
             }
         }else if(msgReceived.startsWith("/youwin")){   //收到的为胜利信息时
             columnsClient.isOnColumns = false;
-            columnsClient.columnsPad.setVicStatus(columnsClient.columnsPad.playerNum);
+            columnsClient.isGameOver = true;
             columnsClient.columnsPad.statusText.setText("对手退出");
             columnsClient.cancelGameButton.setEnabled(false);
             columnsClient.createGameButton.setEnabled(true);

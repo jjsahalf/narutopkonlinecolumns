@@ -139,10 +139,6 @@ public class ColumnsServerThread extends Thread{
         sendPublicMsg(getWaitList());
         feedBack("/yourname " + (String)clientNameHash.get(clientSocket));
         sendPublicMsg("/roomNum " + Global.SERVERROOMNUMBER);
-//        feedBack("Columns客户端");
-//        feedBack("/list--更新用户列表");
-//        feedBack("/<username><talk>--私聊");
-//        feedBack("注意：命令必须对所有用户发送");
     }
 
     //该方法处理服务器从客户端监听得到的消息
@@ -155,17 +151,11 @@ public class ColumnsServerThread extends Thread{
                 feedBack(getWaitList());
             }else if(msgReceived.startsWith("/creategame [incolumns]")){     //收到的消息为创建游戏
                 String gameCreaterName = msgReceived.substring(23); //获取创建者姓名
-//                synchronized(clientNameHash){    //将用户端口放到用户列表中
-//                    clientNameHash.put(clientSocket, msgReceived.substring(12));
-//                    clientNameHash.put(clientSocket, gameCreaterName);
-//                }
                 synchronized(columnsPeerHash){   //将主机设置为等待状态
                     columnsPeerHash.put(gameCreaterName, "wait");
                 }
                 Global.SERVERROOMNUMBER ++ ;
                 feedBack("/yourname " + clientNameHash.get(clientSocket));
-//                sendGamePeerMsg(gameCreaterName, "/OK " + Global.SERVERROOMNUMBER);
-//                feedBack("/OK " + Global.SERVERROOMNUMBER);
                 sendPublicMsg("/OK " + Global.SERVERROOMNUMBER);
                 sendPublicMsg(getUserList());
                 sendPublicMsg(getWaitList());
@@ -210,6 +200,39 @@ public class ColumnsServerThread extends Thread{
                         e.printStackTrace();
                     }
                 }
+            } else if (msgReceived.startsWith("/gameOver")) {      //游戏结束，有一方输掉比赛
+                String columnsClientName = msgReceived.substring(9);
+                if (columnsPeerHash.containsKey(columnsClientName) && !((String) columnsPeerHash.get(columnsClientName)).equals("wait")) {
+                    //游戏胜利方为加入者，发送胜利消息
+                    sendGamePeerMsg((String) columnsPeerHash.get(columnsClientName), "/youwin");
+                    synchronized (clientNameHash) {   //解除正在玩游戏的用户的名称修饰
+                        clientNameHash.put(getOnGameSocket((String) columnsPeerHash.get(columnsClientName)),
+                                (String) columnsPeerHash.get(columnsClientName));
+                    }
+                    synchronized (clientNameHash) {   //解除正在玩游戏的用户的名称修饰
+                        clientNameHash.put(getOnGameSocket(columnsClientName),
+                                columnsClientName);
+                    }
+                    synchronized (columnsPeerHash) {  //删除退出游戏的用户
+                        columnsPeerHash.remove(columnsClientName);
+                    }
+                } else if (columnsPeerHash.containsValue(columnsClientName)) {  //胜利方为游戏创建者，发送胜利消息
+                    sendGamePeerMsg((String) getHashKey(columnsPeerHash, columnsClientName), "/youwin");
+                    synchronized (clientNameHash) {   //解除正在玩游戏的用户的名称修饰,创建者
+                        clientNameHash.put(getOnGameSocket((String) getHashKey(columnsPeerHash, columnsClientName)),
+                                (String) getHashKey(columnsPeerHash, columnsClientName));
+                    }
+                    synchronized (clientNameHash) {   //解除正在玩游戏的用户的名称修饰,参加者
+                        clientNameHash.put(getOnGameSocket(columnsClientName),
+                                columnsClientName);
+                    }
+                    synchronized (columnsPeerHash) {  //删除退出游戏的用户
+                        columnsPeerHash.remove((String) getHashKey(columnsPeerHash, columnsClientName));
+                    }
+                }
+                //将游戏房间减一
+                Global.SERVERROOMNUMBER -- ;
+                sendPublicMsg("/roomNum " + Global.SERVERROOMNUMBER);
             }else if(msgReceived.startsWith("/giveup")){   //收到的信息为放弃游戏
                 String columnsClientName = msgReceived.substring(8);
                 if(columnsPeerHash.containsKey(columnsClientName)
@@ -224,8 +247,6 @@ public class ColumnsServerThread extends Thread{
                         clientNameHash.put(getOnGameSocket(columnsClientName),
                                 columnsClientName);
                     }
-//                    //游戏创建者退出，则
-//                    sendGamePeerMsg((String)columnsPeerHash.get(columnsClientName),"/winOver");
                     synchronized(columnsPeerHash){  //删除退出游戏的用户
                         columnsPeerHash.remove(columnsClientName);
                     }
@@ -235,8 +256,6 @@ public class ColumnsServerThread extends Thread{
                         clientNameHash.put(getSocket(columnsClientName),
                                 columnsClientName);
                     }
-//                    //游戏创建者退出，则
-//                    sendGamePeerMsg((String)columnsPeerHash.get(columnsClientName),"/winOver");
                     synchronized(columnsPeerHash){  //删除退出游戏的用户
                         columnsPeerHash.remove(columnsClientName);
                     }
